@@ -1,0 +1,318 @@
+const App = () => {
+            const [screen, setScreen] = useState('intro'); // intro, chapters, capsule, quiz, result
+            const [selectedChapter, setSelectedChapter] = useState(null);
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [score, setScore] = useState(0);
+            const [showFeedback, setShowFeedback] = useState(false);
+            const [lastAnswerCorrect, setLastAnswerCorrect] = useState(false);
+            const [showSidebar, setShowSidebar] = useState(true);
+
+            const handleStart = () => {
+                setScreen('chapters');
+                setShowSidebar(true);
+            };
+
+            const selectChapter = (chapter) => {
+                setSelectedChapter(chapter);
+                setScreen('capsule');
+            };
+
+            const startQuiz = () => {
+                setCurrentQIndex(0);
+                setScore(0);
+                setScreen('quiz');
+                setShowSidebar(false);
+            };
+
+            const handleAnswer = (optionIdx) => {
+                const currentQuestion = selectedChapter.questions[currentQIndex];
+                const isCorrect = optionIdx === currentQuestion[2];
+                setLastAnswerCorrect(isCorrect);
+                if (isCorrect) setScore(s => s + 1);
+                setShowFeedback(true);
+            };
+
+            const handleNextQuestion = () => {
+                setShowFeedback(false);
+                if (currentQIndex + 1 < selectedChapter.questions.length) {
+                    setCurrentQIndex(currentQIndex + 1);
+                } else {
+                    setScreen('result');
+                }
+            };
+
+            const returnHome = () => {
+                setScreen('chapters');
+                setShowSidebar(true);
+                setSelectedChapter(null);
+            };
+
+            return (
+                <div className="w-full h-full bg-slate-900 font-sans text-slate-100 flex flex-col overflow-hidden select-none" dir="rtl">
+                    <header className="h-16 px-8 flex items-center justify-between bg-slate-800 border-b border-slate-700 shrink-0">
+                        <div className="flex items-center gap-4">
+
+                            
+                                <button
+                                    onClick={() => setShowSidebar((s) => !s)}
+                                    className="p-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 transition-colors flex items-center justify-center"
+                                    title="التبديل بين الفصول"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"/>
+                                    </svg>
+                                </button>
+
+                            <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center shadow-sm">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold text-white tracking-tight">منصة الأوبئة التعليمية</h1>
+                                <p className="text-[10px] text-slate-500 font-medium">المستقبل يبدأ من هنا • Magdi Academy</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            
+<div className="text-left">
+                                <div className="text-xs text-slate-500">النقاط الحالية</div>
+                                <div className="text-lg font-mono font-bold text-amber-400">{score * 50} XP</div>
+                            </div>
+                            <div className="w-10 h-10 rounded-full border-2 border-teal-900 p-0.5">
+                                <div className="w-full h-full rounded-full bg-teal-900/40 flex items-center justify-center text-xs font-bold text-teal-400">M.A</div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="flex-1 flex overflow-hidden">
+                        <nav className={"bg-slate-800 border-slate-700 flex flex-col shrink-0 shadow-sm z-10 transition-all duration-300 " + (showSidebar ? "w-72 border-l" : "w-0 overflow-hidden border-none")}>
+                            <div className="p-5 border-b border-slate-700/50 text-[11px] font-black text-slate-500 uppercase tracking-widest">فصول المنهج</div>
+                            <div className="flex-1 overflow-y-auto p-3 space-y-1.5 custom-scrollbar">
+                                {chaptersData.map((ch, idx) => {
+                                    const disabled = (!ch.questions || ch.questions.length === 0);
+                                    const isSelected = (selectedChapter && selectedChapter.id) === ch.id;
+                                    return (
+                                        <button 
+                                            key={ch.id}
+                                            disabled={disabled}
+                                            onClick={() => selectChapter(ch)}
+                                            className={'w-full flex items-center gap-3 p-3.5 rounded-xl transition-all text-right ' + (isSelected ? 'bg-teal-900/40 border border-teal-900/50 shadow-sm text-teal-300' : 'hover:bg-slate-900 ') + (disabled ? 'opacity-40 cursor-not-allowed text-slate-500' : 'text-slate-600')}
+                                        >
+                                            <div className={'w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold transition-colors ' + (isSelected ? 'bg-teal-600 shadow-md text-white' : 'bg-slate-100 text-slate-500')}>
+                                                {String(idx + 1).padStart(2, '0')}
+                                            </div>
+                                            <span className={'text-sm leading-relaxed truncate ' + (isSelected ? 'font-bold' : 'font-medium')}>{ch.title}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </nav>
+
+                        <section className="flex-1 relative flex flex-col p-8 bg-slate-900/50 overflow-y-auto custom-scrollbar">
+                            {(screen === 'intro' || (screen === 'chapters' && !selectedChapter)) && (
+                                <div className="flex-1 flex flex-col items-center justify-center text-center fade-in">
+                                    <div className="w-24 h-24 bg-teal-900/60 text-teal-400 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                                        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+                                    </div>
+                                    <h2 className="text-5xl md:text-7xl font-black mt-8 mb-4 tracking-tight text-white drop-shadow-sm">منصة الأوبئة</h2>
+                                    <p className="text-xl text-slate-500 max-w-2xl mb-12 font-medium">استعد بثقة عالية، اختبر معلوماتك، وتفوق في مسارك الأكاديمي بخطوات واثقة.</p>
+                                    <div className="animate-pulse text-teal-400 border border-teal-800 bg-teal-900/40 px-6 py-3 rounded-full text-sm font-bold flex items-center gap-2 shadow-sm">
+                                        <span>اختر من القائمة الجانبية للبدء</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {screen === 'capsule' && selectedChapter && (
+                                <div className="flex-1 flex flex-col items-center justify-center slide-up">
+                                    <div className="bg-slate-800 p-8 md:p-12 rounded-[2rem] border border-slate-700/50 shadow-xl max-w-3xl w-full text-center">
+                                        <div className="inline-block p-4 bg-teal-900/40 rounded-2xl mb-6 border border-teal-900">
+                                            <svg className="w-10 h-10 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                        </div>
+                                        <span className="text-[11px] uppercase text-teal-400 font-black tracking-widest mb-3 block">كبسولة التنشيط الدماغي</span>
+                                        <h2 className="text-3xl font-black text-white mb-8 leading-tight">{selectedChapter.title}</h2>
+                                        <div className="bg-slate-900 p-8 rounded-2xl border border-slate-700/50 text-slate-600 text-lg leading-relaxed mb-10 text-right font-medium">
+                                            {selectedChapter.capsule}
+                                        </div>
+                                        <button onClick={startQuiz} className="w-full py-5 bg-teal-600 hover:bg-teal-500 text-white rounded-2xl font-black text-xl shadow-lg shadow-teal-900/40 transition-all hover:scale-[1.01] border  border-transparent">
+                                            بدء الاختبار المنهجي
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {screen === 'quiz' && selectedChapter && selectedChapter.questions && selectedChapter.questions[currentQIndex] && (
+                                <div className="flex-1 flex flex-col slide-up min-h-0">
+                                    <div className="mb-6 flex items-center justify-between bg-slate-800 p-5 rounded-2xl border border-slate-700/50 shadow-sm shrink-0">
+                                        <div className="flex flex-col gap-1.5 text-right">
+                                            <span className="text-[11px] uppercase text-teal-400 font-black tracking-widest">السؤال الحالي</span>
+                                            <h2 className="text-lg font-bold text-white truncate max-w-md">{selectedChapter.title}</h2>
+                                        </div>
+                                        <div className="flex gap-5 items-center">
+                                            <div className="text-center">
+                                                <div className="text-[11px] font-bold text-slate-500 mb-0.5">التقدم</div>
+                                                <div className="text-sm font-black text-slate-200">{currentQIndex + 1} / {(selectedChapter.questions ? selectedChapter.questions.length : 0)}</div>
+                                            </div>
+                                            <div className="w-14 h-14 rounded-full border-4 border-slate-700/50 relative flex items-center justify-center font-black text-sm text-teal-400">
+                                                <svg className="absolute top-0 left-0 w-full h-full -rotate-90" style={{ transform: 'scale(1.16)', transformOrigin: 'center' }}>
+                                                    <circle cx="24" cy="24" r="24" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray="150.796" strokeDashoffset={150.796 - (150.796 * (Math.round(((currentQIndex) / (selectedChapter.questions ? selectedChapter.questions.length : 0)) * 100)) / 100)} className="text-teal-500 transition-all duration-500"></circle>
+                                                </svg>
+                                                {Math.round(((currentQIndex) / (selectedChapter.questions ? selectedChapter.questions.length : 0)) * 100)}%
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 flex gap-6 overflow-hidden flex-col md:flex-row">
+                                        <div className="flex-1 flex flex-col space-y-6 overflow-y-auto pr-2 custom-scrollbar pb-10">
+                                            <div className="bg-slate-800 p-8 rounded-3xl border border-slate-700/50 shadow-sm relative overflow-hidden shrink-0">
+                                                <div className="absolute top-0 right-0 w-1.5 h-full bg-teal-900/400"></div>
+                                                <span className="text-teal-400 font-mono text-sm font-bold bg-teal-900/40 px-3 py-1 rounded-md">سؤال #{String(currentQIndex + 1).padStart(2, '0')}</span>
+                                                <p className="text-2xl font-black leading-normal mt-5 text-right text-white">
+                                                    {(selectedChapter.questions[currentQIndex] || [])[0]}
+                                                </p>
+                                                
+                                                <div className="grid grid-cols-1 gap-4 mt-8">
+                                                    {(selectedChapter.questions[currentQIndex] && selectedChapter.questions[currentQIndex][1] ? selectedChapter.questions[currentQIndex][1] : []).map((opt, idx) => {
+                                                        const isCorrectAns = idx === (selectedChapter.questions[currentQIndex] || [])[2];
+                                                        let btnClass = "w-full p-5 rounded-2xl border-2 transition-all text-right text-base font-bold flex items-center justify-between ";
+                                                        if (showFeedback && isCorrectAns) {
+                                                            btnClass += "border-emerald-500 bg-emerald-900/40 text-emerald-200 shadow-sm";
+                                                        } else if (showFeedback) {
+                                                            btnClass += "border-slate-700/50 bg-slate-900 text-slate-500 cursor-not-allowed";
+                                                        } else {
+                                                            btnClass += "border-slate-700/50 bg-slate-800 hover:border-teal-500 hover:bg-teal-900/40 text-slate-600 hover:text-teal-300 shadow-sm";
+                                                        }
+                                                        return (
+                                                            <button 
+                                                                key={idx}
+                                                                disabled={showFeedback}
+                                                                onClick={() => handleAnswer(idx)}
+                                                                className={btnClass}
+                                                            >
+                                                                <span className="leading-relaxed">{opt}</span>
+                                                                {showFeedback && isCorrectAns ? (
+                                                                    <svg className="w-6 h-6 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                                                                ) : (
+                                                                    <div className="w-5 h-5 rounded-full border-2 border-slate-700 shrink-0 group-hover:border-indigo-400"></div>
+                                                                )}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            {showFeedback && (
+                                                <div className={'flex-1 border-2 rounded-3xl p-6 flex gap-5 items-start shrink-0 bounce-in shadow-sm ' + (lastAnswerCorrect ? 'bg-emerald-900/40 border-emerald-800' : 'bg-rose-900/40 border-rose-800')}>
+                                                    <div className={'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ' + (lastAnswerCorrect ? 'bg-emerald-900/400' : 'bg-rose-900/400' )}>
+                                                        {lastAnswerCorrect ? (
+                                                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
+                                                        ) : (
+                                                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1 text-right pt-2">
+                                                        <h4 className={'text-lg font-black mb-2 ' + (lastAnswerCorrect ? 'text-emerald-300' : 'text-rose-300' )}>
+                                                            {lastAnswerCorrect ? 'إجابة صحيحة!' : 'تعلم من الأخطاء:'}
+                                                        </h4>
+                                                        <p className={'text-base leading-relaxed mb-6 font-medium ' + (lastAnswerCorrect ? 'text-emerald-200' : 'text-rose-200' )}>
+                                                            {(selectedChapter.questions[currentQIndex] || [])[3]}
+                                                        </p>
+                                                        <div className="flex justify-end">
+                                                            <button onClick={handleNextQuestion} className={'px-8 py-3.5 font-bold rounded-xl transition-all shadow-sm hover:-translate-y-0.5 ' + (lastAnswerCorrect ? 'bg-emerald-600 hover:bg-emerald-900/400 text-white' : 'bg-rose-600 hover:bg-rose-900/400 text-white')}>
+                                                                السؤال التالي ◀
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Right Sidebar Stats Panel */}
+                                        <div className="md:w-80 flex flex-col gap-5 shrink-0 overflow-y-auto custom-scrollbar pb-10">
+                                            <div className="bg-slate-800 border border-slate-700/50 rounded-3xl p-6 shrink-0 shadow-sm">
+                                                <div className="text-[11px] text-slate-500 uppercase font-black mb-5 text-right tracking-widest">إحصائيات الجلسة</div>
+                                                <div className="space-y-6">
+                                                    <div className="space-y-2">
+                                                        <div className="flex justify-between text-sm flex-row-reverse">
+                                                            <span className="text-slate-500 font-bold">إجابات صحيحة</span>
+                                                            <span className="text-emerald-500 font-black">{score}</span>
+                                                        </div>
+                                                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden" dir="ltr">
+                                                            <div className="h-full bg-emerald-900/400 transition-all duration-500" style={{ width: ((selectedChapter.questions ? selectedChapter.questions.length : 0) ? (score / (selectedChapter.questions ? selectedChapter.questions.length : 0)) * 100 : 0) + '%' }}></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <div className="flex justify-between text-sm flex-row-reverse">
+                                                            <span className="text-slate-500 font-bold">إجابات خاطئة</span>
+                                                            <span className="text-rose-500 font-black">{currentQIndex + (showFeedback ? 1 : 0) - score}</span>
+                                                        </div>
+                                                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden" dir="ltr">
+                                                            <div className="h-full bg-rose-900/400 transition-all duration-500" style={{ width: ((selectedChapter.questions ? selectedChapter.questions.length : 0) ? ((currentQIndex + (showFeedback ? 1 : 0) - score) / (selectedChapter.questions ? selectedChapter.questions.length : 0)) * 100 : 0) + '%' }}></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {showFeedback && (
+                                                <div className={'flex-1 border-2 rounded-3xl flex flex-col items-center justify-center p-8 text-center shrink-0 min-h-[200px] slide-up shadow-sm ' + (lastAnswerCorrect ? 'bg-emerald-900/40 border-emerald-900' : 'bg-rose-900/40 border-rose-900')}>
+                                                    <div className="text-6xl mb-5 animate-bounce">
+                                                        {lastAnswerCorrect ? '🎯' : '🧠'}
+                                                    </div>
+                                                    <h3 className={'text-xl font-black ' + (lastAnswerCorrect ? 'text-emerald-300' : 'text-rose-300')}>
+                                                        {lastAnswerCorrect ? 'أداء ممتاز!' : 'راجع المعلومات جيدا'}
+                                                    </h3>
+                                                    <div className={'mt-6 px-6 py-2.5 rounded-full text-white text-sm font-bold shadow-md ' + (lastAnswerCorrect ? 'bg-emerald-600' : 'bg-rose-600')}>
+                                                        {lastAnswerCorrect ? '+50 XP' : '0 XP'}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {screen === 'result' && selectedChapter && (
+                                <div className="flex-1 flex flex-col items-center justify-center slide-up">
+                                    <div className="bg-slate-800 p-12 rounded-[3rem] border border-slate-700/50 shadow-xl text-center max-w-lg w-full relative overflow-hidden">
+                                        <div className="absolute top-0 inset-x-0 h-2 bg-teal-900/400"></div>
+                                        <div className="text-[6rem] mb-6 drop-shadow-sm">
+                                            {score > (selectedChapter.questions ? selectedChapter.questions.length : 0) / 2 ? '🏆' : '📈'}
+                                        </div>
+                                        <h2 className="text-4xl font-black text-white mb-4">انتهت الجولة!</h2>
+                                        <p className="text-lg text-slate-500 font-medium mb-8">لقد أكملت اختبار: {selectedChapter.title}</p>
+                                        <div className="flex items-center justify-center gap-4 text-4xl font-mono bg-slate-900 py-8 px-12 rounded-3xl border border-slate-700/50 mb-10 shadow-inner">
+                                            <span className="text-emerald-500 font-black">{score}</span>
+                                            <span className="text-slate-600">/</span>
+                                            <span className="text-teal-500 font-black">{(selectedChapter.questions ? selectedChapter.questions.length : 0)}</span>
+                                        </div>
+                                        <button onClick={returnHome} className="w-full bg-teal-600 hover:bg-teal-500 text-white font-black py-4 rounded-xl shadow-md transition-transform hover:scale-[1.02] border border-transparent">
+                                            العودة للقائمة الرئيسية 🏠
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </section>
+                    </main>
+
+                    <footer className="h-16 bg-slate-800 border-t border-slate-700 px-8 flex items-center justify-between z-50 shrink-0">
+                        <div className="text-xs text-slate-500 font-medium flex items-center gap-3">
+                            <span>V 2.2.0</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+                            <span>© 2024 جميع الحقوق محفوظة</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-xs font-black tracking-wide">
+                            <span className="text-teal-400">MAGDI ACADEMY</span>
+                            <span className="h-4 w-px bg-slate-200"></span>
+                            <span className="text-slate-500">إعداد: مجدي عبد البصير</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <div className="flex gap-2.5 items-center bg-emerald-900/40 px-3 py-1.5 rounded-full border border-emerald-900">
+                                <div className="w-2.5 h-2.5 rounded-full bg-emerald-900/400 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"></div>
+                                <span className="text-[11px] font-bold text-emerald-300">متصل الآن</span>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        
