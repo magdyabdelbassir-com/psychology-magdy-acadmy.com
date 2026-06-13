@@ -3,388 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة موضوعات إكلينيكية باللغة الإنجليزية</title>
+    <title>منصة موضوعات اكلنيكية باللغة الانجليزية</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        secondary: '#9333ea',
+                        dark: '#1e1b4b'
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 1s infinite',
+                        'star-pulse': 'star 2s ease-in-out infinite',
+                        'fade-in': 'fadeIn 1s ease-out forwards',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        star: {
+                            '0%, 100%': { opacity: '0.3', transform: 'scale(0.8)' },
+                            '50%': { opacity: '1', transform: 'scale(1.2)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(50px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.5)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap');
-        
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: #f3f4f6;
-        }
-
-        /* Animations */
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide-up {
-            animation: slideUp 0.8s ease-out forwards;
-        }
-        
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.1); opacity: 1; }
-            70% { transform: scale(0.9); }
-            100% { transform: scale(1); }
-        }
-        .animate-bounce-in {
-            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
-        }
-        .stars {
-            display: inline-block;
-        }
-        .stars::before, .stars::after {
-            content: '⭐';
-            display: inline-block;
-            animation: twinkle 1.5s infinite ease-in-out;
-            margin: 0 8px;
-        }
-        .stars::after {
-            animation-delay: 0.75s;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
+        .gradient-bg { background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%); }
+        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased overflow-x-hidden selection:bg-indigo-300 selection:text-indigo-900 pb-20">
+<body class="bg-gray-100 min-h-screen pb-16">
     <div id="root"></div>
 
     <script type="text/babel">
-        // --- 1. Data Source (Strictly extracted from the provided files without truncation) ---
-        const questionsData = [
-            { question: "من مكونات المقابلة:", options: ["Specific interviewer responses", "Technique", "Rapport", "All of the above"], correct: 3, explanation: "تشمل المقابلة ثلاثة مكونات أساسية: الألفة (Rapport)، التقنية (Technique)، والتلخيص (Summarizing)." },
-            { question: "Translate: Before leaping into any interview, the interviewer should have acquired some skills", options: ["ليس شئ مما سبق", "قبل الانتقال لأي مقابلة يجب أن يكون القائم بالمقابلة قد اكتسب بعض القدرات", "قبل القفز إلى أي مقابلة يجب أن يكون القائم بالمقابلة قد اكتسب بعض المهارات", "قبل القفز إلى مقابلة يجب أن تحتوي المقابلة على بعض المهارات"], correct: 2, explanation: "الترجمة الدقيقة لـ skills هي مهارات، و leaping تعني القفز أو البدء، مما يعكس أهمية المهارات العامة قبل أي سياق إكلينيكي." },
-            { question: "A pattern of social inhibition, feelings of inadequacy, and hypersensitivity to negative evaluation", options: ["الشخصية الهستيرية", "الشخصية النرجسية", "الشخصية الاستقلالية", "الشخصية التجنبية"], correct: 3, explanation: "اضطراب الشخصية التجنبية (Avoidant PD) يتميز بنمط من التثبيط الاجتماعي والشعور بالنقص والحساسية المفرطة للتقييم السلبي." },
-            { question: "تعبر عن تتبع كلمات العميل ومقتطفات مختارة من المقابلة:", options: ["Note Taking", "Rapport", "General Skills", "Verbal Tracking"], correct: 3, explanation: "التتبع اللفظي (Verbal Tracking) هو تكرار الكلمات المهمة ومتابعة أفكار العميل بسلاسة." },
-            { question: "It is a specific behavior that requires cultural knowledge:", options: ["Eye contact", "Verbal tracking", "Specific behavior", "Body language"], correct: 0, explanation: "التواصل البصري (Eye contact) يعتمد بشكل كبير على الثقافة؛ في بعض الثقافات قد يعني التهديد، وفي أخرى يعني الانتباه." },
-            { question: "The clinical interview mean:", options: ["كل ما سبق", "هي قادرة على تكرار الكلمات والعبارات الرئيسية...", "هي مقابلة تشخيصية وتتضمن أسئلة تتعلق بمعايير الدليل التشخيصي...", "هو أي اسلوب تقييمي يستخدمه علم النفس الكلينكي ويحتوي علي الصدق والثبات"], correct: 3, explanation: "أي أداة تقييم في علم النفس الإكلينيكي يجب أن تتسم بالصدق والثبات والفائدة الإكلينيكية، والمقابلة هي الأداة الأساسية." },
-            { question: "Is an enduring pattern of inner experience and behavior that deviates markedly from the expectations...", options: ["Body Language", "Borderline personality disorder", "The clinical interview", "A personality disorder"], correct: 3, explanation: "هذا هو التعريف الشامل لاضطراب الشخصية (Personality Disorder) كما ورد في الدليل التشخيصي." },
-            { question: "Quieting yourself, being self-aware, and developing positive working relationships:", options: ["Note Taking", "General Skills", "Technique", "Verbal Tracking"], correct: 1, explanation: "هذه المهارات تعتبر المهارات العامة (General Skills) المطلوبة كقاعدة لأي مقابلة." },
-            { question: "يجب على القائمين بالمقابلة أن يدركوا العلاقة بين الاستماع اليقظ والتواصل البصري:", options: ["General Skills", "Verbal Tracking", "Eye contact", "Body language"], correct: 2, explanation: "التواصل البصري (Eye contact) ليس فقط يسهل الاستماع، بل ينقله ويُشعر العميل بأنه مسموع." },
-            { question: "General rules for the interviewer:", options: ["All of the above", "minimize restlessness", "appear attentive", "face the client"], correct: 0, explanation: "مواجهة العميل، الانتباه، وتقليل الحركة الزائدة هي القواعد العامة للغة الجسد للمُقابل." },
-            { question: "المحاورون الفعالون قادرون على تكرار مفتاح كلمات وعبارات تعود لعملائهم لضمان أنهم تم سماعهم بدقة", options: ["Not at all", "Rapport", "General Skills", "Verbal Tracking (التتبع اللفظي)"], correct: 3, explanation: "التتبع اللفظي يتيح إشعار العميل بأن كلماته ومفاهيمه تُسمع بدقة، دون أن يكون التكرار آلياً." },
-            { question: "The extent that measures what it claims to measure:", options: ["لا شئ مما سبق", "الصدق", "المقابلة الإكلينيكية", "الثبات"], correct: 1, explanation: "الصدق (Validity) يعني أن الأداة تقيس بالفعل ما تدعي قياسه." },
-            { question: "The most pivotal element of a clinical interview:", options: ["الوعي بالذات", "الهدوء النفسي", "العميل", "القائم بالمقابلة"], correct: 3, explanation: "المُقابل (The Interviewer) هو العنصر الأهم، فهو من يوجه الحوار ويطبق المهارات الفنية ويتفهم التفاعل الإنساني." },
-            { question: "Translate: A skilled interviewer is a master of the technical and practical aspects of the interview", options: ["يركز القائم بالمقابلة على الاطار الذهني الخاص بالمقابلة", "قبل القفز إلى المقابلة يجب ان يمتلك القائم بالمقابلة بعض المهارات", "القائم على المقابلة الماهر هو شخص خبير بالجوانب العملية والتقنية للمقابلة", "القائم بالمقابلة هو شخص يمتلك مهارات عامة"], correct: 2, explanation: "الترجمة تعني أن القائم بالمقابلة الماهر يتقن الجوانب العملية والتقنية، بالإضافة إلى الفهم الواسع للتفاعل الإنساني." },
-            { question: "It communicates listening and the client feels heard", options: ["Self-aware", "General skills", "Eye contact", "Body language"], correct: 2, explanation: "التواصل البصري (Eye Contact) يشعر العميل بالاستماع ويؤكد المتابعة." },
-            { question: "يمكن للثقافة تشكيل دلالات...........", options: ["General skills", "Technique", "Taking notice", "Body language"], correct: 3, explanation: "لغة الجسد (Body language) يمكن أن تشكلها الثقافة، فما يُعد احتراماً في ثقافة قد يكون إهانة في أخرى." },
-            { question: "One of the general rules for the interviewer", options: ["Body language", "Self-aware", "Eye contact", "Face the client"], correct: 3, explanation: "من قواعد لغة الجسد: مواجهة العميل (Face the client)، الظهور بيقظة، وتقليل القلق." },
-            { question: "يمكن أن يساء تفسيرها من قبل المحاور الذي تكون معرفته بالخلفية الثقافية للعميل ناقصة", options: ["Technique", "Body language", "Rapport", "Self-aware"], correct: 1, explanation: "لغة الجسد للعميل قد تُفهم خطأ إذا كان المُقابل يفتقر إلى الوعي بالخلفية الثقافية." },
-            { question: "هو نمط دائم من التجربة الداخلية والسلوك الذي ينحرف بشكل ملحوظ عن توقعات ثقافة الأفراد", options: ["antisocial personality", "Narcissistic personality", "Paranoid personality", "personality disorder"], correct: 3, explanation: "هذا هو التعريف العام لاضطرابات الشخصية (Personality disorder)." },
-            { question: "..... and suspiciousness such that others' motives are interpreted as malevolent", options: ["Borderline", "Narcissistic", "Schizoid", "paranoid"], correct: 3, explanation: "الشخصية البارانوية (Paranoid) تتسم بعدم الثقة والشك وتفسير دوافع الآخرين بالخبث." },
-            { question: "نمط من الانفصال عن العلاقات الاجتماعية ومجموعة محدودة من التعبير العاطفي", options: ["Schizoid", "Borderline", "Narcissistic", "paranoid"], correct: 0, explanation: "الشخصية الفصامية (Schizoid) تتسم بالانفصال وبرود التعبير العاطفي." },
-            { question: "..... is a pattern of acute discomfort in close relationships, cognitive or perceptual distortions, and eccentricities of behavior", options: ["الشخصية الهستيرية", "الشخصية الحدية", "الشخصية شبه الفصامية", "الشخصية الفصامية"], correct: 2, explanation: "الشخصية شبه الفصامية (Schizotypal) تعاني من تشوهات إدراكية وغرابة في السلوك." },
-            { question: "من الاضطرابات التي تظهر في الطفولة وتسبب الشخصية المعادية للمجتمع", options: ["التبول الليلي", "اضطراب المسلك", "القلق", "تشتت الانتباه وفرط الحركة"], correct: 1, explanation: "اضطراب المسلك (Conduct disorder) في الطفولة يعتبر مؤشراً قوياً ومقدمة لاضطراب الشخصية المعادية للمجتمع." },
-            { question: "Defined as any consequence that makes a behavior less likely to recur in the future", options: ["ادارة حالات الطوارئ", "التعزيز", "العلاج بالتعرض", "العقاب"], correct: 3, explanation: "العقاب (Punishment) هو النتيجة التي تقلل من احتمالية تكرار السلوك." },
-            { question: "There are .... types of Adaptation (Conditioning)", options: ["1", "2", "3", "4"], correct: 1, explanation: "يوجد نوعان أساسيان من التكيف: التكيف الكلاسيكي (Classical) والتكيف الفعال (Operant)." },
-            { question: "هو علاج يستخدم أيضا في المقام الأول للرهاب والاضطرابات القلق الأخرى، يشبه تماما العلاج بالتعرض", options: ["Systematic Desensitization", "Contingency Management", "Assertiveness Training", "Exposure Therapy"], correct: 0, explanation: "التقليل المنظم للحساسية (Systematic Desensitization) يشبه التعرض لكنه يربط المثير المخيف باستجابة استرخاء جديدة." },
-            { question: "يستخدم الاسترخاء كاستجابة جديدة تحل محل استجابة الخوف في .............", options: ["التعزيز", "التدريب على تأكيد الذات", "التقليل المنظم للحساسية", "العلاج بالتعرض"], correct: 2, explanation: "التقليل المنظم للحساسية يربط الاسترخاء كاستجابة جديدة تمنع الخوف." },
-            { question: "Is the clinical psychologist version of 'facing your fears'.", options: ["Assertiveness Training", "Exposure Therapy", "Systematic Desensitization", "Contingency Management"], correct: 1, explanation: "العلاج بالتعرض (Exposure Therapy) هو تطبيق مباشر لمواجهة المخاوف لفك الارتباط الشرطي." },
-            { question: "يستخدم فيه سلوك النمذجة (Modeling)", options: ["العلاج بالتعرض", "التقليل المنظم للحساسية", "التدريب على تأكيد الذات", "العقاب"], correct: 2, explanation: "في التدريب على تأكيد الذات (Assertiveness Training)، يقوم المعالج بنمذجة السلوك السليم ليتبعه العميل." },
-            { question: "The symptom of 'Is preoccupied with fantasies of unlimited success, power, brilliance, beauty, or ideal love' is a diagnostic criterion of ... PD.", options: ["Avoidant", "Narcissistic", "Paranoid", "Antisocial"], correct: 1, explanation: "الانشغال بأوهام العظمة والنجاح اللامحدود هو من سمات الشخصية النرجسية." },
-            { question: "The symptom of 'Deceitfulness, as indicated by repeated lying' is a diagnostic criterion of ... PD.", options: ["Antisocial", "Narcissistic", "Paranoid", "Avoidant"], correct: 0, explanation: "الخداع والكذب المتكرر واستغلال الآخرين سمات أساسية للشخصية المعادية للمجتمع (Antisocial)." },
-            { question: "One of the General Personality Disorder Criteria is the disturbance in:", options: ["Cognition", "self-control", "rigidity", "anxiousness"], correct: 0, explanation: "المعايير العامة لاضطرابات الشخصية تشمل اضطراباً في المعرفة (Cognition)، والوجدان، والأداء الشخصي والاندفاعية." },
-            { question: "... which involves reinforcing successive approximations of the target behavior.", options: ["token economy", "shaping", "treatment", "Punishment"], correct: 1, explanation: "التشكيل (Shaping) هو تعزيز 'خطوات الطفل' التدريجية نحو السلوك المستهدف." },
-            { question: "Other meaning of Observational Learning is:", options: ["token economy", "shaping", "treatment", "modeling"], correct: 3, explanation: "التعلم بالملاحظة يُعرف أيضاً بالنمذجة (Modeling) حيث يتعلم الفرد بمراقبة سلوك الآخرين." },
-            { question: "... personality disorder is a pattern of excessive emotionality and attention seeking.", options: ["Histrionic", "Narcissistic", "Paranoid", "Avoidant"], correct: 0, explanation: "الشخصية الهستيرية (Histrionic) تسعى دائماً لجذب الانتباه وتبالغ في إظهار المشاعر." },
-            { question: "... personality disorder is a pattern of preoccupation with orderliness, perfectionism, and control.", options: ["Dependent", "Obsessive-compulsive", "Avoidant", "Paranoid"], correct: 1, explanation: "الشخصية الوسواسية القهرية تنشغل بشكل مفرط بالنظام والمثالية والسيطرة." },
-            { question: "The symptom of 'Frantic efforts to avoid real or imagined abandonment' is a diagnostic criterion of ... PD.", options: ["Borderline", "Avoidant", "Dependent", "Paranoid"], correct: 0, explanation: "الجهود المحمومة لتجنب الهجر هي السمة الجوهرية لاضطراب الشخصية الحدية (Borderline)." },
-            { question: "The problems in the range, intensity, lability, and appropriateness of emotional response are belonging to:", options: ["impulse control", "Cognition", "Affectivity", "inflexibility"], correct: 2, explanation: "الاضطراب في مدى وشدة وملاءمة الاستجابة العاطفية يُعرف بالوجدان (Affectivity)." },
-            { question: "Phobias, according to the behavioral therapist, are best understood as the result of:", options: ["disorder", "operant conditioning", "Classical conditioning", "wrong conditions"], correct: 2, explanation: "تُفهم المخاوف المرضية سلوكياً على أنها نتيجة للتكيف الكلاسيكي (Classical conditioning) حيث يرتبط المثير المخيف بنتيجة سلبية." },
-            { question: "... is defined as any consequence that makes a behavior more likely to recur in the future.", options: ["Stimulation", "Punishment", "Reinforcement", "adjustment"], correct: 2, explanation: "التعزيز (Reinforcement) يزيد من احتمالية تكرار السلوك مستقبلاً." },
-            { question: "... refers to the removal of an expected reinforcement that results in a decrease in the frequency of a behavior.", options: ["Punishment", "exposure", "treatment", "extinction"], correct: 3, explanation: "الانقراض (Extinction) هو زوال الاستجابة بسبب توقف التعزيز المتوقع." },
-            { question: "A skilled interviewer is not only a master of the technical and practical aspects of the interview.", options: ["True", "False"], correct: 0, explanation: "صحيح، المقابل الماهر يجب أن يمتلك أيضاً فهماً واسعاً لطبيعة التفاعل الإنساني والمهارات العامة." },
-            { question: "The client's body language can be misinterpreted by an interviewer whose knowledge of the client's cultural background is deficient.", options: ["True", "False"], correct: 0, explanation: "صحيح، الاختلافات الثقافية قد تؤدي لتفسير لغة الجسد بشكل خاطئ إذا غاب الوعي الثقافي." },
-            { question: "يعد التعرض للمنبهات المثيرة للقلق أحد المكونات الرئيسية للتقليل المنظم للحساسية.", options: ["True", "False"], correct: 0, explanation: "صحيح، لكنه يتضمن إضافة استجابة استرخاء لمنع القلق بدلاً من التعرض المجرد." },
-            { question: "Borderline personality disorder is a pattern of instability in interpersonal relationships, self-image, and affects, and marked impulsivity.", options: ["True", "False"], correct: 0, explanation: "صحيح، هذا هو التعريف الدقيق للشخصية الحدية بالدليل التشخيصي." }
-        ];
+        const { useState, useEffect } = React;
 
-        // Memes Phrases
-        const correctPhrases = [
-            { text: "الله عليك يا فخر المناهج! 🚀", emoji: "🚀" },
-            { text: "عاش يا وحش! 🥇", emoji: "🥇" },
-            { text: "إجابة في الجون! 🎯", emoji: "🎯" },
-            { text: "أينشتاين بيسلم عليك! 🧠", emoji: "🧠" }
-        ];
-        
-        const wrongPhrases = [
-            { text: "يا شماتة أبلة ظاظا! 🤦‍♂️", emoji: "🤦‍♂️" },
-            { text: "إنت قريت السؤال أصلاً؟ 🤡", emoji: "🤡" },
-            { text: "بطيخة خالص! 🍉", emoji: "🍉" },
-            { text: "حاول تاني، ماحدش بيتعلم ببلاش! 🤷‍♂️", emoji: "🤷‍♂️" }
-        ];
-
-        // --- 2. Components ---
-
-        // Icons (Inline SVGs)
-        const IconPlay = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        // Icons
+        const PlayIcon = () => (
+            <svg className="w-6 h-6 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
         );
 
-        const IconBook = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        const FallbackLogo = () => (
+            <svg className="w-24 h-24 mx-auto text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
         );
 
-        const IconFallbackLogo = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+        const ArrowLeftIcon = () => (
+            <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
         );
 
-        // Header Component
-        const Header = () => (
-            <div className="w-full bg-gradient-to-r from-indigo-800 to-purple-800 p-4 shadow-lg text-white flex justify-center items-center">
-                <div className="relative h-12 w-12 ml-4 overflow-hidden rounded-full border-2 border-indigo-300">
-                    <img 
-                        src="logo.jpg" 
-                        alt="Logo" 
-                        className="object-cover w-full h-full"
-                        onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'flex';
-                        }}
-                    />
-                    <div style={{display: 'none'}} className="absolute inset-0 bg-indigo-600 justify-center items-center">
-                        <IconBook />
-                    </div>
-                </div>
-                <h1 className="text-xl md:text-2xl font-bold tracking-wider">منصة موضوعات إكلينيكية</h1>
-            </div>
+        const CheckIcon = () => (
+            <svg className="w-6 h-6 text-green-500 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
         );
 
-        // Footer Component
-        const Footer = () => (
-            <div className="fixed bottom-0 w-full bg-gray-900 text-white py-3 shadow-inner z-50 text-center">
-                <p className="text-sm md:text-lg font-bold stars">إعداد: مجدي عبد البصير</p>
-            </div>
+        const XIcon = () => (
+            <svg className="w-6 h-6 text-red-500 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
         );
 
-        // Intro Screen Component
-        const IntroScreen = ({ onStart }) => (
-            <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 animate-slide-up">
-                <div className="bg-white p-8 md:p-12 rounded-3xl shadow-2xl text-center max-w-xl w-full border border-gray-100">
-                    <div className="mx-auto bg-gradient-to-tr from-indigo-500 to-purple-500 w-32 h-32 rounded-full mb-6 flex items-center justify-center shadow-lg relative overflow-hidden">
-                        <img 
-                            src="logo.jpg" 
-                            className="object-cover w-full h-full"
-                            onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
-                            }}
-                        />
-                        <div style={{display: 'none'}} className="absolute inset-0 flex items-center justify-center bg-indigo-500">
-                            <IconFallbackLogo />
-                        </div>
-                    </div>
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-                        مرحباً بك في المنصة!
-                    </h2>
-                    <p className="text-gray-600 mb-8 text-lg leading-relaxed">
-                        استعد لاختبار معلوماتك الإكلينيكية والتدرب على أهم أسئلة المنهج باللغتين العربية والإنجليزية بطريقة تفاعلية وممتعة.
-                    </p>
-                    <button 
-                        onClick={onStart}
-                        className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-gradient-to-r from-indigo-600 to-purple-600 font-pj rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 hover:scale-105 shadow-xl hover:shadow-2xl"
-                    >
-                        <span className="flex items-center text-lg">
-                            <IconPlay />
-                            ابدأ رحلتك الآن
-                        </span>
-                    </button>
-                </div>
-            </div>
+        const StarIcon = () => (
+            <svg className="w-4 h-4 inline text-yellow-400 animate-star-pulse" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
         );
 
-        // Capsule Screen Component
-        const CapsuleScreen = ({ onProceed }) => (
-            <div className="max-w-4xl mx-auto p-4 py-8 animate-slide-up">
-                <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-t-4 border-indigo-500">
-                    <div className="bg-indigo-50 p-6 border-b border-indigo-100 flex items-center">
-                        <IconBook />
-                        <h2 className="text-2xl font-bold text-indigo-900">كبسولة المراجعة السريعة</h2>
-                    </div>
-                    <div className="p-6 md:p-8 space-y-6 text-gray-700 leading-relaxed">
-                        <div className="p-4 bg-purple-50 rounded-lg border-r-4 border-purple-500">
-                            <h3 className="font-bold text-lg text-purple-900 mb-2">1. المقابلة الإكلينيكية (The Clinical Interview)</h3>
-                            <ul className="list-disc list-inside space-y-1">
-                                <li>المُقابل هو أهم عنصر، ويجب أن يمتلك <strong>General Skills</strong> (تهدئة الذات، الوعي بالذات، بناء العلاقة).</li>
-                                <li><strong>السلوكيات المحددة:</strong> التواصل البصري ولغة الجسد تعتمد بشدة على <strong>الثقافة (Culture)</strong>.</li>
-                                <li><strong>التتبع اللفظي (Verbal Tracking):</strong> تكرار الكلمات المهمة بسلاسة لإشعار العميل بالاستماع.</li>
-                                <li>أي أداة تقييم يجب أن تتمتع بـ: <strong>الصدق (Validity)</strong> و <strong>الثبات (Reliability)</strong>.</li>
-                            </ul>
-                        </div>
-                        <div className="p-4 bg-indigo-50 rounded-lg border-r-4 border-indigo-500">
-                            <h3 className="font-bold text-lg text-indigo-900 mb-2">2. اضطرابات الشخصية (Personality Disorders)</h3>
-                            <ul className="list-disc list-inside space-y-1">
-                                <li><strong>النرجسية (Narcissistic):</strong> عظمة وحاجة للإعجاب.</li>
-                                <li><strong>المعادية للمجتمع (Antisocial):</strong> انتهاك حقوق الآخرين وكذب متكرر (تبدأ غالباً باضطراب المسلك).</li>
-                                <li><strong>التجنبية (Avoidant):</strong> تثبيط اجتماعي وحساسية للتقييم السلبي.</li>
-                                <li><strong>الحدية (Borderline):</strong> عدم استقرار في العلاقات والمزاج واندفاعية، وجهود لتجنب الهجر.</li>
-                            </ul>
-                        </div>
-                        <div className="p-4 bg-blue-50 rounded-lg border-r-4 border-blue-500">
-                            <h3 className="font-bold text-lg text-blue-900 mb-2">3. التكيف والعلاج السلوكي (Conditioning)</h3>
-                            <ul className="list-disc list-inside space-y-1">
-                                <li>المخاوف المرضية تنتج من <strong>التكيف الكلاسيكي</strong>.</li>
-                                <li><strong>التعرض (Exposure):</strong> مواجهة المثير للقضاء على الخوف.</li>
-                                <li><strong>التقليل المنظم للحساسية:</strong> استبدال الخوف بالاسترخاء.</li>
-                                <li><strong>التعزيز (Reinforcement):</strong> يزيد السلوك. <strong>العقاب (Punishment):</strong> يقلل السلوك.</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div className="p-6 bg-gray-50 text-center border-t border-gray-100">
-                        <button 
-                            onClick={onProceed}
-                            className="inline-flex items-center justify-center px-8 py-3 text-lg font-bold text-white transition-all bg-indigo-600 rounded-lg hover:bg-indigo-700 hover:scale-105 shadow-md"
-                        >
-                            انتقل للاختبار 🚀
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
+        const correctPhrases = [
+            "الله عليك يا فخر المناهج!", "عاش يا وحش علم النفس!", "إنت فرويد في زمانك!",
+            "دكتور نفسي برتبة امتياز!", "يا واد يا جامد، جبت التايهة!", "إيه الحلاوة دي، الدماغ دي شغالة!",
+            "بطل الإكلينيكي وصل!", "أستاذ ورئيس قسم يا ابني!", "دماغك دي توزن بلد!",
+            "الطب النفسي بيفخر بيك!", "الإجابة دي تستاهل دكتوراه!", "فنان في تشخيص الحالات!",
+            "تسلم دماغك يا عبقري!", "يا سيدي على التركيز العالي!", "طبيب القلوب والعقول!",
+            "جواب في الجون يا بطل!", "أيوة كده، نورنا بعلمك!", "علامة في علم النفس!",
+            "خبير واستشاري قد الدنيا!", "ضربة معلم، صح الصح!"
+        ];
 
-        // Quiz Screen Component
-        const QuizScreen = () => {
-            const [currentQIndex, setCurrentQIndex] = React.useState(0);
-            const [score, setScore] = React.useState(0);
-            const [modalState, setModalState] = React.useState({ show: false, isCorrect: false, selectedOption: null });
-            const [quizFinished, setQuizFinished] = React.useState(false);
+        const incorrectPhrases = [
+            "يا شماتة أبلة ظاظا فينا!", "إنت قريت السؤال أصلاً؟", "فرويد بيتقلب في قبره يا ابني!",
+            "كده المريض هيروح في داهية!", "يا ابني ركز، دي أساسيات!", "الدماغ دي محتاجة ريستارت!",
+            "بتهزر صح؟ قول إنك بتهزر!", "أين عقلك يا متعلم يا بتاع المدارس؟", "شكلنا هنحولك من دكتور لمريض!",
+            "راجع المذكرة يا وحش بدل العك ده!", "إيه اللي إنت هببته ده؟", "إجابة من كوكب زحل!",
+            "الظاهر إنك محتاج جلسة علاجية!", "كده هنقفل العيادة بدري!", "يا نهار أبيض على دي إجابة!",
+            "فصلت مننا ولا إيه؟", "مين اللي غششك الإجابة دي؟", "عكيت الدنيا يا بطل!",
+            "خسارة تعب السنين يا ولدي!", "لا لا، محتاج قهوة وتصحصح معانا!"
+        ];
 
-            const question = questionsData[currentQIndex];
+        const correctEmojis = ["🥇", "🚀", "🔥", "👑", "🌟"];
+        const incorrectEmojis = ["🤦‍♂️", "🤡", "🐢", "💤", "🤷‍♂️"];
 
-            const handleOptionClick = (index) => {
-                const isCorrect = (index === question.correct);
-                if (isCorrect) setScore(prev => prev + 1);
+        // The chapters structure (Will be injected during build)
+        const chaptersData = [{"title":"الفصل الأول: مدخل إلى أسباب الاضطراب العقلي","capsule":"يتناول هذا الفصل مفهوم الاضطراب العقلي من منظور الطب النفسي وعلم النفس. يركز الطب النفسي على الخلل البيولوجي والعصبي والأعراض السريرية للتشخيص باستعمال أدلة كـ DSM-5، بينما يركز علم النفس على الديناميات الداخلية والخلل الوظيفي، مع أهمية الاتجاه التكاملي المفسر للمعاناة النفسية.","questions":[["ينظر الطب النفسي إلى الاضطراب كحالة مرضية ناتجة عن:",["صراعات","خلل في العمليات البيولوجية أو العصبية","بيئة","إرادة"],1,"في الطب النفسي، يُنظر إلى الاضطراب على أنه نابع من خلل بيولوجي وعصبي يؤثر على وظائف المخ."],["المرجع الأساسي إكلينيكياً والصادر عن الجمعية الأمريكية للطب النفسي:",["ICD-11","DSM-5-TR","WHO","BDI"],1,"دليل DSM-5 هو الدليل التشخيصي والإحصائي للاضطرابات العقلية المعتمد عالمياً في الطب النفسي الممارس."],["ينظر علم النفس إلى الاضطراب العقلي باعتباره:",["ضعفاً أخلاقياً","خللاً عصبياً فقط","نمطاً غير تكيفي يعيق التوافق","استجابة ثقافية"],2,"علم النفس يركز على السلوكيات غير التكيفية التي تعيق قدرة الفرد على التوافق مع متطلبات حياته."],["الاتجاه التكاملي (البيولوجي-النفسي-الاجتماعي) يفترض أن الاضطراب:",["نتاج تفاعل معقد بين الاستعداد والخبرات","خلل كيميائي فقط","صدمة","وراثي"],0,"النموذج التكاملي يعتبر التفاعل المعقد بين العوامل الحيوية (استعداد) والنفسية والبيئية (خبرات ضاغطة) هو السبب."],["السلوك غير السوي يُعرّف بأنه:",["تشخيص نفسي","نمط سلوكي يتداخل مع التكيف","مرض دماغي","اضطراب جيني"],1,"السلوك غير السوي هو الذي يعيق الأداء الوظيفي ويمنع الشخص من التكيف الفعال."],["من التحديثات في الدليل (DSM-5):",["إلغاء القلق","إدراج \"طيف التوحد\" كتشخيص شامل","فصل الصحة الجسدية","منع الدواء"],1,"في إصداره الحديث، جمع DSM-5 الاضطرابات التوحدية تحت مظلة واحدة واعتبرها (طيف التوحد)."],["دليل ICD-11 يتميز بأنه:",["يصدر عن APA","يركز على الصحة العامة والإحصاء الطبي","يرفض العلاج","لا فرق"],1,"عكس DSM-5، يصدر ICD-11 عن منظمة الصحة العالمية ويشمل كافة الأمراض لخدمة الإحصاء الطبي."],["إذا ظهر السلوك كاستجابة متوقعة ثقافياً (كالحزن بعد الوفاة):",["يُعد اضطراباً","يحتاج دواء","لا يُعد اضطراباً عقلياً","يُصنف كفصام"],2,"الاستجابات المتوقعة والمقبولة لخبرات الفقد (كالحزن الطبيعي) لا تُعتبر اضطرابات عقلية وفق الدليل."],["يعتمد الطب النفسي في الممارسة على:",["التحليل","التشخيص الطبي والعلاج الدوائي","تفسير الأحلام","الإرشاد"],1,"يتميز الطب النفسي بالاعتماد على التشخيص القائم على الأعراض وتقديم العلاجات الطبية، وخاصة الدوائية."],["يتفق الطب النفسي وعلم النفس على أن الاضطرابات العقلية:",["بسيطة","ظواهر معقدة متعددة العوامل","ناتجة عن السحر","غير قابلة للعلاج"],1,"هناك إجماع على أن الاضطرابات ليست أحادية السبب بل هي نتيجة تفاعلات معقدة لعدة عوامل."],["أي من الآتي يُعد مثالاً على السلوك غير السوي؟",["الرياضة","تجنب المشاكل والانسحاب الشديد","البكاء لسبب","التخطيط"],1,"الانسحاب الاجتماعي الشديد يُعتبر سلوكاً معيقاً لعملية حل المشكلات والتكيف الطبيعي."],["الدليل الذي يصدر عن منظمة الصحة العالمية هو:",["DSM-5","ICD-11","MMPI","WAIS"],1,"التصنيف الدولي للأمراض (ICD) يصدر عن منظمة الصحة العالمية لتغطية مجمل الصحة العامة."],["إدراج \"اضطراب القمار\" كإدمان سلوكي تم في دليل:",["ICD-10","DSM-IV","DSM-5","BDI"],2,"تحديثات دليل DSM-5 أدرجت لعب القمار المرضي ضمن فئة الإدمان لاشتراكه في آليات الإدمان مع المواد الأخرى."],["لكي يُشخص السلوك كاضطراب وفق DSM-5، يجب أن يسبب:",["معاناة نفسية وضعفاً وظيفياً","اختلاف رأي","إبداعاً","ذكاء"],0,"المعيار الأساسي للتشخيص هو وجود كرب/معاناة شخصية وصعوبة/ضعف وظيفي."],["الانسحاب الاجتماعي الشديد كوسيلة للتكيف يُصنف كـ:",["سلوك سوي","مهارة","سلوك غير متكيف (غير سوي)","اضطراب ثنائي القطب حتماً"],2,"رغم أنه آلية دفاع، إلا أنه غير تكيفي لأنه يُضعف أداء الفرد وتفاعله السوي مع البيئة."],["أي من الآتي ليس من مجالات تركيز الطب النفسي؟",["الأعراض","الديناميات النفسية","العلاج الدوائي","الأساس العصبي"],1,"الديناميات والصراعات النفسية الداخلية هي من صميم تركيز علم النفس (خاصة التحليلي)، وليس التركيز الأساسي للطب النفسي."],["يركز علم النفس بشكل أساسي على:",["الدواء","الجراحة","العمليات المعرفية والبيئية","الوراثة فقط"],2,"يهتم علم النفس برصد تأثير البيئة والتنشئة والعمليات الإدراكية على السلوك."],["من أوجه الاتفاق بين الطب وعلم النفس:",["الاضطراب ضعف أخلاقي","التدخل المبكر يحسن فرص التعافي","لا يمكن علاجه","الجراحة هي الحل"],1,"هناك إجماع مبني على الممارسة السريرية بأن التدخل في المراحل المبكرة يعزز من المآل الإيجابي للعلاج."],["السلوك غير السوي:",["هو دائماً مرض","قد يظهر بدون تشخيص مرضي","مستحيل علاجه","لا يؤثر على التكيف"],1,"يمكن أن تظهر سلوكيات غير تكيفية أو غريبة في ظروف معينة دون أن ترقى لمعايير التشخيص السريري."],["في النسخ السابقة لـ DSM كان يُستثنى من تشخيص الاكتئاب:",["القلق","الحزن الشديد","الفصام","الإدمان"],1,"كان استثناء الحزن الشديد (اكتئاب الفقد) موجوداً لعدم خلط الحزن الطبيعي بالمرضي، قبل أن تلغيه التحديثات الأخيرة."],["الانتماء للعلوم الإنسانية والسلوكية يخص:",["الطب النفسي","علم النفس","علم الأعصاب","الطب الباطني"],1,"علم النفس يصنف ضمن العلوم الإنسانية التي تدرس السلوك، بخلاف الطب النفسي كعلم طبي."],["الانتماء للعلوم الطبية يخص:",["علم الاجتماع","الطب النفسي","علم النفس","الفلسفة"],1,"الطب النفسي هو فرع من فروع تخصصات الطب البشري السريرية."],["التشخيص التفريقي يهتم به بشكل أساسي:",["عالم الاجتماع","الطبيب النفسي","الفيلسوف","المرشد الأكاديمي"],1,"الطبيب النفسي يستخدمه بشكل أساسي لاستبعاد التداخلات الطبية والاضطرابات الأخرى للوصول للتشخيص الصحيح."],["يرى التخصصان (الطب وعلم النفس) أن المعاناة النفسية:",["استثناء","عنصر أساسي للتشخيص","ضعف","دليل إبداع"],1,"المعاناة والقصور يعبران عن الجوهر المشترك بين كل مفاهيم الاضطراب في مختلف التخصصات."],["الدليل DSM-5 يركز بشكل أساسي على:",["الإحصاء","التطبيق السريري المفضل","الصحة العامة","علم الاجتماع"],1,"خلافاً لـ ICD الذي يخدم الإحصاء، يُعتبر دليل DSM الأداة السريرية المفضلة للأطباء في التشخيص."],["لا يُعد السلوك اضطراباً إذا كان:",["يؤذي الذات","استجابة طبيعية لحدث ضاغط","يسبب هلوسة","يعيق العمل"],1,"ردات الفعل التكيفية والطبيعية للضغط لا تعتبر مرضاً عقلياً."],["التشوهات الفكرية والعمليات المعرفية تقع ضمن اهتمامات:",["الطب النفسي","علم النفس","الطب الشرعي","التمريض"],1,"هذه تقع ضمن صميم اهتمام علم النفس المعرفي لفهم الآليات الداخلية والخارجية للاضطراب."],["توفير معايير تشخيصية موحدة للأطباء والباحثين هو دور:",["MMPI","DSM-5","WAIS","BDI"],1,"هذا هو الهدف الرئيسي للدليل التشخيصي والإحصائي للاضطرابات العقلية."],["النموذج الحيوي-النفسي-الاجتماعي ظهر بسبب:",["نجاح التفسير الأحادي","قصور التفسيرات الأحادية","رفض الأدوية","رفض العلاج النفسي"],1,"لأن التفسيرات المعتمدة على جانب واحد فقط (الجينات فقط مثلاً) فشلت في إعطاء صورة كاملة، برز النموذج التكاملي."],["الأمراض العقلية ظواهر:",["سهلة التفسير","معقدة متعددة العوامل","ناتجة عن التربية فقط","ناتجة عن الجينات فقط"],1,"الاضطرابات النفسية نتيجة تفاعل شبكة معقدة من العناصر الجينية، البيئية التنشئية والصدمات."],["يعتبر الطب النفسي الاضطراب العقلي ناتجاً عن خلل في العمليات البيولوجية أو العصبية.",["صح","خطأ"],0,"نعم، هذا هو جوهر منظور النموذج الطبي الحيوي للأمراض العقلية المتبع في الطب النفسي."],["السلوك غير السوي هو دائماً تشخيص نهائي لاضطراب نفسي.",["صح","خطأ"],1,"خطأ، قد يكون السلوك غير سوي لكنه لا يلبي المعايير الزمنية والمحددة لتشخيص اضطراب بعينه."],["يركز علم النفس على الديناميات النفسية والصراعات الداخلية في تفسير الاضطراب.",["صح","خطأ"],0,"نعم، خصوصاً في المدارس التحليلية التي تبحث عن أصل السلوك في عمليات نفسية وصراعات."],["الدليل DSM-5 يصدر عن منظمة الصحة العالمية (WHO).",["صح","خطأ"],1,"خطأ، الـ DSM يصدر عن الجمعية الأمريكية للطب النفسي، بينما الـ ICD يصدر عن منظمة الصحة."],["الاتجاه التكاملي هو الإطار الأكثر قبولاً في الممارسة المعاصرة للطب النفسي وعلم النفس.",["صح","خطأ"],0,"نعم، النموذج البيولوجي-النفسي-الاجتماعي يمثل التوافق المعاصر بين جل المتخصصين في المجال."],["تم إزالة استثناء الحزن الشديد من تشخيص الاكتئاب في التحديثات الأخيرة (DSM-5).",["صح","خطأ"],0,"نعم، أزيل الاستثناء المسمى بـ (Bereavement exclusion) وبات يمكن تشخيص الحداد المعقد كاضطراب."],["يتفق الطب النفسي وعلم النفس على أن الاضطراب العقلي هو ضعف أخلاقي أو نقص في الإرادة.",["صح","خطأ"],1,"خطأ، كلا الاتجاهين يرفضان الخرافات ويعتبرانه خللاً طبياً ونفسياً يعالج، وليس ضعفاً إرادياً أو أخلاقياً."],["التشخيص التفريقي من الاهتمامات الرئيسية لعلماء النفس أكثر من الأطباء النفسيين.",["صح","خطأ"],1,"خطأ، التشخيص التفريقي من صميم عمل أطباء الطب النفسي لتحديد الحالات المرضية بيولوجياً ونفسياً."],["دليل ICD-11 يستخدم على نطاق أوسع ليشمل الصحة العامة والإحصاء الطبي.",["صح","خطأ"],0,"نعم، يستخدم لترقيم وحصر جميع الأمراض البشرية للأغراض الإحصائية للصحة العامة عالمياً."],["المعاناة النفسية والقصور الوظيفي عنصران أساسيان في تشخيص الاضطراب العقلي.",["صح","خطأ"],0,"نعم، بدونهما لا يرقى السلوك لمعيار التشخيص للمرض العقلي في أي دليل."],["السلوك غير السوي يتدخل مع قدرة الشخص على التكيف وحل المشكلات.",["صح","خطأ"],0,"صحيح، عدم التكيف (Maladaptive) يعطل الأداء ويسبب شللاً لأساليب حل المشاكل السليمة."],["الدليل DSM-5 يركز على الإحصاء الطبي أكثر من التطبيق السريري المفضل.",["صح","خطأ"],1,"خطأ، الـ DSM صمم خصيصاً كأداة سريرية وتطبيقية للأطباء وليس كأداة إحصائية بحتة مثل ICD."],["العلاج الدوائي هو حجر الأساس في التدخلات الخاصة بعلم النفس حصراً.",["صح","خطأ"],1,"خطأ، الدواء هو أداة الأطباء النفسيين، أما علماء النفس يعتمدون على الجلسات النفسية وتعديل السلوك."],["التدخل العلاجي المبكر يحسن من فرص التعافي في الاضطرابات العقلية.",["صح","خطأ"],0,"صحيح، لأن التدخل السريع يمنع تفاقم وتكلس الأعراض في شخصية ومخ المريض."],["يسهل دليل ICD-11 تكامل البيانات الصحية والإحصائية بين البلدان المختلفة.",["صح","خطأ"],0,"نعم، فهو تصنيف عالمي موحد يوفر لغة مرجعية واحدة لبيانات الصحة بين دول العالم."],["إضافة اضطراب القمار كإدمان سلوكي تم في دليل DSM-5.",["صح","خطأ"],0,"نعم، لأول مرة يتم إضفاء الطابع الإدماني لسلوك قهري دون مادة كيميائية (القمار) في هذا الإصدار."],["السلوك غير السوي شرط أساسي ومستقل لوجود اضطراب نفسي في كل الحالات.",["صح","خطأ"],1,"خطأ، هو شرط مهم لكن ليس كافياً أو مستقلاً دائماً فالتشخيص يعتمد على مدة وطبيعة الأعراض الأخرى."],["يعتمد علم النفس على التقييم النفسي بينما يعتمد الطب النفسي على التشخيص الطبي.",["صح","خطأ"],0,"نعم، علم النفس يستخدم اختبارات ومقاييس نفسية كمية ووصفية بينما الطب النفسي يبحث عن المرض العضوي."],["الاضطراب العقلي ليس مجرد استجابة متوقعة لحدث مثل فقدان عزيز.",["صح","خطأ"],0,"صحيح، فالاستجابة الطبيعية للفقد لا تعد مرضا، إنما يتشكل المرض إذا كان الرد غير متوازن ومعيقاً لفترة طويلة."],["الأنماط السلوكية التي تعيق الأداء الوظيفي تعتبر تكيفية وسوية.",["صح","خطأ"],1,"خطأ، الأنماط المعيقة هي بالتعريف غير تكيفية أو غير سوية (Maladaptive)."]]},{"title":"الفصل الثاني: نموذج خصائص الاضطراب العقلي والأسباب البيولوجية","capsule":"يركز هذا الفصل على الأساس البيولوجي للاضطرابات، ودور أجزاء الدماغ مثل القشرة واللوزة والنواقل مثل الدوبامين، وكيف أن النموذج البيولوجي الطبي يلقي باللوم على الخلل الكيميائي.","questions":[["السمة الجوهرية للاضطراب العقلي التي تعبر عن قصور في آليات نفسية أو عصبية هي:",["الانحراف","الخلل الوظيفي","الاستمرار","الأعراف"],1,"الخلل الوظيفي (Dysfunction) هو الفشل المباشر للآليات العصبية أو النفسية في أداء دورها التكيفي السليم."],["نموذج \"الخلل الضار\" يجمع بين:",["الثقافة والزمن","البعد العلمي (الخلل) والبعد القيمي (الضرر)","البيولوجي والوراثي","الإحصاء"],1,"ويكفيلد اقترح هذا النموذج ليجمع بين ضرر المعاناة الشخصية (شِق قيمي) والخلل الوظيفي البيولوجي (شِق علمي)."],["القسم المسؤول عن الوظائف الإدراكية والواعية والتفكير في الدماغ هو:",["جذع الدماغ","الدماغ الأمامي (المخ)","النخاع","المخيخ"],1,"المخ والقشرة المخية، اللذان يقعان في الدماغ الأمامي، يختصان بالوعي والإدراك والتفكير المعقد."],["الفص المسؤول عن التخطيط والحكم والاستدلال والوظائف التنفيذية هو:",["الجداري","الصدغي","الجبهي","القذالي"],2,"الفص الجبهي هو مركز القيادة التنفيذية، المسؤول عن التخطيط للمستقبل والحكم وكبح الاندفاع."],["المركز العاطفي للدماغ والذي يلعب دوراً في الخوف وحفظ النوع هو:",["العقد القاعدية","الجهاز الحوفي","المهاد","القشرة"],1,"الجهاز الحوفي (Limbic System) يشتمل على اللوزة والحصين ويدير العواطف والغرائز البدائية للخوف والبقاء."],["شبكة الوضع الافتراضي (DMN) تنشط في الدماغ عندما:",["يركز الفرد بشدة","يكون الدماغ في حالة راحة","يتعرض لصدمة","يحل مسألة"],1,"تنشط DMN عندما نكون مسترخين أو نحلم بأحلام اليقظة دون التركيز على مسألة بعينها."],["يُعتبر المهاد (Thalamus) في الدماغ بمثابة:",["مركز حرارة","محطة ترحيل حسية","مركز ذاكرة","مركز حركي"],1,"المهاد يستقبل الإشارات الحسية (كالبصر والسمع) ويرحلها إلى القشرة المخية لمعالجتها وعياً."],["الجزء المسؤول عن تنظيم حرارة الجسم والشبع هو:",["المهاد","الوطاء (تحت المهاد)","القشرة","القذالي"],1,"الوطاء (Hypothalamus) يحافظ على التوازن الداخلي ودرجة الحرارة والجوع والعطش."],["النظرية الكيميائية للاكتئاب تفترض أنه ناتج عن:",["زيادة الدوبامين","نقص السيروتونين","نقص الأنسولين","زيادة الغلوتامات"],1,"الأساس النظري لأدوية (SSRIs) هو اعتبار الاكتئاب ناجماً عن خفض إفراز أو استهلاك السيروتونين في الدماغ."],["أي مما يلي ليس من خصائص الاضطراب العقلي؟",["نمط أعراض","خلل وظيفي","مجرد تعارض مع الثقافة","معاناة نفسية"],2,"التعارض البسيط أو التمرد على ثقافة معينة، كارتداء ملابس غريبة، لا يعتبر اضطراباً عقلياً."],["الفص المسؤول عن الإحساس الواعي بالسمع هو:",["الجبهي","الصدغي","الجداري","القذالي"],1,"الفص الصدغي الجانبي يحتوي على القشرة السمعية المتخصصة في تفسير الأصوات واللغة المنطوقة."],["تفسير النبضات كصورة بصرية (الرؤية) يتم في الفصوص:",["القذالية","الأمامية","الجهاز الحوفي","النخاع"],0,"الفصوص القذالية الموجودة في مؤخرة الرأس هي المخصصة لاستقبال وتفسير الإشارات البصرية."],["النصف الأيسر من الدماغ يهيمن عادة على:",["المكان والموسيقى","المنطق والتحليل واللغة","العواطف","النوم"],1,"وفقاً للتباين الوظيفي، يختص الأيسر بالتعلم الإجرائي اللفظي والمنطقي بينما الأيمن للفنون والمكان."],["وفقاً لـ(فالنشتاين)، الأدلة التي تربط الأمراض بخلل كيميائي:",["قاطعة","ضعيفة وغير حاسمة","دقيقة جداً","مطابقة للسكري"],1,"أكد إيليوت فالنشتاين أن الأدلة التي تربط اضطرابات كالاكتئاب بتوازن كيميائي دقيق أدلة مجتزأة وضعيفة جداً مقارنة بالأمراض الجسدية."],["إذا كان السلوك غريباً ولكنه مقبول في ثقافة الفرد، فإنه:",["يُشخص كاضطراب","لا يُعد اضطراباً","يحتاج أدوية","يُصنف كخلل"],1,"معيار (الاستثناء الثقافي) يحفظ السلوك السحري أو الديني المقبول ثقافياً من اعتباره مرضا."],["منطقة \"بروكا\" في الفص الجبهي مسؤولة عن:",["السمع","عضلات الكلام","الرؤية","الشم"],1,"مركز بروكا ينظم العضلات ويتحكم تشريحياً في النطق وإنتاج الأصوات اللغوية."],["شبكة \"البروز\" تربط بين:",["الفص الأمامي والقشرة الحزامية","المخيخ والمهاد","اللوزة والحصين","النخاع والمخ"],0,"شبكة البروز (Saliency Network) تنسق الانتباه عبر ربط الفص الأمامي التنفيذي بالقشرة الحزامية."],["المبدأ الأساسي للطب النفسي البيولوجي يعتبر المرض العقلي:",["سلوكاً متعلماً","مرضاً عضوياً (خلل كيميائي)","صدمة","فقراً"],1,"يعتبر هذا المبدأ أن المرض العقلي يتساوى تشريحياً ودوائياً مع أي مرض عضوي كمرض السكري."],["القشرة الجزيرية ترتبط بمعالجة:",["البصر","المشاعر الاجتماعية-العاطفية كالاشمئزاز","التوازن","السمع"],1,"هذه القشرة المدفونة ترتبط بتنسيق المحفزات البيولوجية وردود الفعل المعيبة أو المشمئزة للظروف."],["الفص الجداري يحتوي على:",["القشرة البصرية","القشرة الحسية الجسدية الرئيسية","مركز السمع","الشبع"],1,"الفص الجداري يتمثل دوره في ترجمة المدخلات الحسية الجسدية (الألم، الحرارة، اللمس) للإدراك."],["الجهاز الذي يربط نصفي الدماغ الأيمن والأيسر:",["الجسم الثفني","اللوزة","الحصين","المهاد"],0,"الجسم الثفني (Corpus callosum) هو حزمة ألياف كبرى تنقل المعلومات وتوحد عمل شقي المخ الأيمن والأيسر."],["تتناوب شبكة الوضع الافتراضي (DMN) بين نشاط:",["معتدل وعالي","سكون تام ونشاط","نوم ويقظة","لا تتناوب"],0,"حتى في الراحة لا يتوقف العقل تماماً بل هنالك نشاط للدماغ يتناوب بين نشآط عالي أو معتدل كإستعداد دائم."],["الخلل الوظيفي يعني اضطراباً في:",["الإدراك والتفكير وتنظيم الانفعال","لون البشرة","الطول","فصيلة الدم"],0,"كل هذه النواتج هي آليات عقلية أو حيوية متقدمة، الإخفاق فيها يعطل كليات الوظيفة التكيفية."],["الاضطراب العقلي يتصف بـ:",["الاستمرار النسبي","العابرة السريعة","عدم التكرار","التلاشي التلقائي"],0,"لابد أن تحافظ الأعراض على فترة زمنية ونمط مستمر ليتم اعتبارها كاضطراب."],["الدماغ الخلفي يتكون من:",["المخ","النخاع المستطيل والجسر والمخيخ","المهاد","اللوزة"],1,"هذه البنى مسؤولة عن عمليات حيوية دقيقة وتنسيق اتزاني وحركي بعيداً عن الوعي الظاهر."],["قشرة الفص الجبهي الحجاجية (OFC) تلعب دوراً حاسماً في:",["السمع","تنظيم الجهاز الحوفي والوظائف التنفيذية","الرؤية","التوازن"],1,"تمثل همزة وصل لتهدئة اللوزة (مركز العواطف) وتحكيم لغة العقل وتخطيط العواقب."],["تتلقى القشرة الحسية الإحساسات عبر محطة ترحيل هي:",["المهاد","المخيخ","الحصين","اللوزة"],0,"المهاد يُشبه لوحة التحكم الهاتفية التي توجه كل الإحساسات إلى مركزها الخاص بالقشرة المخية، سوى الشم."],["الجزء الأمامي من تحت المهاد يتحكم في:",["الشبع","فقدان الحرارة (كالتعرق)","الاحتفاظ بالحرارة","الرؤية"],1,"ينظم العرق وتمدد الأوعية الدموية لتبريد الجسم عند الارتفاع الشديد في درجة الحرارة."],["يُنتقد الأطباء النفسيون البيولوجيون أحياناً بسبب:",["الاعتماد المفرط على الأدوية كخط أول","رفضهم للأدوية","علاجهم السلوكي","جراحة المخ"],0,"الانتقادات تركز على إسراع هؤلاء بصرف الدواء وتهميش الأسباب النفسية أو البيئية للحالة."],["عند وصف مرض الفصام بيولوجياً، يتم التركيز غالباً على ناقل:",["السيروتونين","الدوبامين","الأنسولين","الأدرينالين"],1,"النظرية الدوبامينية تفيد بوجود زيادة إفراطية مخلة بالدوبامين في الفصام مما يسبب أوهاماً وهلاوس."],["لا يتم تشخيص الاضطراب بناءً على عرض واحد بل على نمط مستمر من الأعراض.",["صح","خطأ"],0,"صحيح، لأن عرضاً واحداً أو لحظة حزن لا تكفي، بل يتطلب الأمر متلازمة ونمطاً مستداماً."],["الفصوص الجبهية هي أسرع أجزاء الدماغ نضجاً وتكتمل في مرحلة الطفولة المبكرة.",["صح","خطأ"],1,"خطأ، الفصوص الجبهية هي من أبطأ الأجزاء نمواً وتستمر بالنضج وتكوين الوصلات حتى أوائل العشرينات."],["يفترض نموذج الخلل الضار وجود فشل في آلية نفسية يترتب عليه ضرر أو معاناة.",["صح","خطأ"],0,"صحيح، حيث يجمع ويكفيلد الضرر الذي يقرره المجتمع، والخلل الذي تقرره البيولوجيا السويّة."],["القشرة الحركية في النصف الأيسر من الدماغ تتحكم في الجانب الأيسر من الجسم.",["صح","خطأ"],1,"خطأ، تتحكم بشكل متعاكس، النصف الأيسر مسؤول عن عضلات وحركة الجانب الأيمن."],["الجهاز الحوفي هو المركز العاطفي للدماغ ويضم اللوزة الدماغية والحصين.",["صح","خطأ"],0,"نعم، هذان المكونان ينظمان الذكريات والتفاعلات والانفعالات العاطفية، والحفاظ عموما على نوع الإنسان."],["النصف الأيمن من الدماغ يهيمن غالباً على المهارات اللغوية والمنطق.",["صح","خطأ"],1,"خطأ، النصف الأيسر هو المتخصص بشكل كلاسيكي في المنطق والمهارات اللفظية واللغوية."],["الوطاء (Hypothalamus) يعمل كمركز لتنظيم درجة حرارة الجسم.",["صح","خطأ"],0,"صحيح، بالإضافة لتنظيمه للغرائز كالجوع والعطش."],["أثبت العلماء بفحوصات الدم القاطعة نقص السيروتونين لدى كل مرضى الاكتئاب.",["صح","خطأ"],1,"خطأ، لا يوجد مقياس بيولوجي للدم يعكس بشكل مقطوع محتوى الناقل الكيميائي داخل أعصاب مرضى الاكتئاب."],["شبكة الوضع الافتراضي (DMN) تتوقف تماماً عن العمل عندما يكون الإنسان في راحة.",["صح","خطأ"],1,"خطأ، بالعكس تنشط DMN بقوة أثناء الراحة والشرود وعدم التركيز بمهام خارجية."],["منطقة \"فيرنيكه\" تعتبر الموقع الرئيسي لفهم وصياغة الجمل المنطوقة.",["صح","خطأ"],0,"نعم، وتمثل مركز اللغة في الفص الصدغي، على خلاف مركز بروكا المنظم للكلام فقط كعضلات."],["الخلل الوظيفي هو السمة الجوهرية للاضطراب العقلي.",["صح","خطأ"],0,"صحيح، السلوك لا يكون اضطراباً إن لم يسبب ضعفاً وإعاقة للوظائف المعرفية والعملية للشخص."],["يمكن تشخيص الاضطراب العقلي بشكل موثوق من عرض واحد معزول.",["صح","خطأ"],1,"خطأ، بل لابد من تضافر زمرة من الأعراض (متلازمة) وتطابق معايير مدة واستمرار العرض."],["نموذج الخلل الضار يجمع بين البعد العلمي والقيمي بطريقة متوازنة.",["صح","خطأ"],0,"صحيح، لأن التقييم للضرر يبنى على القيم الثقافية للمجتمع (البعد القيمي) والخلل وظيفي (بعد علمي)."],["الفص القذالي مسؤول عن التحكم الدقيق في الحركة وتنسيقها.",["صح","خطأ"],1,"خطأ، الفص القذالي مخصص للرؤية. تنسيق الحركة من مهام المخيخ والعقد القاعدية والقشرة الحركية."],["الفص الجداري ضروري لتفسير الإحساسات الجسدية القادمة من الجسم.",["صح","خطأ"],0,"صحيح، حيث يترجم إشارات اللمس، والألم، ومعرفة الشخص بموقع جسده في الفراغ."],["شبكة الوضع الافتراضي (DMN) تبقي الدماغ في حالة استعداد فوري.",["صح","خطأ"],0,"صحيح، فهي تجعل الماكينة تعمل على استهلاك هادئ لتسهيل الانتباه السريع كنوع من محركات الاحتياط في المركبات."],["الألم هو الإحساس الوحيد \"الواعي\" على مستوى المهاد قبل وصوله للمخ.",["صح","خطأ"],0,"صحيح، في الغالب يتم الشعور بالألم كإحساس واع في المهاد حتى لو لم تدرك القشرة المخية باقي التفاصيل."],["يعتقد الخبراء البيولوجيون أن الفصام يعود لزيادة الدوبامين أو خلل كيميائي.",["صح","خطأ"],0,"صحيح، وهذا تبريرهم الأساسي لاستخدام مضادات الذهان التي تعمل كمحصرات (مغلقات) لمستقبلات الدوبامين."],["الدماغ يتناوب بين فترات انعدام النشاط التام والنشاط المعتدل.",["صح","خطأ"],1,"خطأ، الدماغ لا ينعدم فيه النشاط التام (إلا عند الموت). الدماغ يتناوب بين فترات نشاط متوسطة وعالية."],["الفصوص الأمامية هي المراكز الرئيسية للوعي وخاصة الوعي بالذات.",["صح","خطأ"],0,"نعم، لأنها مكان المهارات التنفيذية العالية وصناعة شخصية الإنسان وقدرته على مراقبة وسبر نفسه."]]},{"title":"الفصل الثالث: الأسباب النفسية للاضطرابات العقلية","capsule":"تُركز المدرسة التحليلية على الصراعات اللاشعورية. الاتجاه المعرفي يفسر الاضطرابات بالتشوهات الفكرية والأخطاء المعرفية. بينما المدرسة السلوكية تعتبر السلوك الخاطئ مجرد استجابة متعلمة نتجت عن التعزيز السلبي أو الاقتران الشرطي.","questions":[["وفقاً للاتجاه التحليلي، تنشأ الاضطرابات العقلية نتيجة:",["صراعات لاشعورية","أفكار سلبية","سلوكيات خاطئة","نقص السيروتونين"],0,"مدرسة فرويد تؤمن أن الاضطرابات النفسية جذورها صراعات وأمنيات مكبوتة في اللاشعور تضغط للخروج."],["الاتجاه الذي يفسر الاكتئاب بـ \"معتقدات جوهرية مشوهة وأخطاء معرفية\":",["التحليلي","السلوكي","المعرفي","البيولوجي"],2,"آرون بيك روَّج للنموذج المعرفي للاكتئاب ومفاده أن أفكار المريض السلبية عن نفسه والمستقبل هي سبب الاكتئاب."],["مفهوم \"العجز المتعلم\" (Learned Helplessness) يرتبط بـ:",["الفصام","الاكتئاب","الوسواس القهري","اضطرابات الشخصية"],1,"مفترضه مارتن سليجمان، ويعني استسلام الفرد عند مواجهة المواقف الصعبة وتسببها له بالاكتئاب لتصوره بانعدام حيلته."],["الفوبيا تتكون نتيجة اقتران مثير محايد بخبرة مؤلمة، وهو ما يفسره الاتجاه:",["الإنساني","السلوكي","التحليلي","المعرفي"],1,"المدرسة السلوكية ترى أن الفوبيا ما هي إلا تكييف كلاسيكي (اشتراط) يعمم الخوف من مثير مؤلم لشيء لم يكن مخيفاً."],["الإطار البيولوجي-النفسي-الاجتماعي يفترض أن الاضطرابات تنجم عن:",["عوامل وراثية","بيئية","تفاعل البيولوجي والنفسي والبيئي","اللاشعور"],2,"المنظور التكاملي يشمل جميع المكونات الحيوية والنفسية والمحيطة ولا يحصر السبب في واحد منها."],["تحويل الصراع النفسي المكبوت إلى أعراض جسدية يُعرف في التحليل النفسي بـ:",["القلق","الهستيريا","العجز","الكبت"],1,"ما كان يسمى الهستيريا التحويلية هو تفسير تحليلي لكيف تعبر الصراعات المكبوتة عن نفسها كشلل أو عمى لا مبرر عضوي له."],["تدني تقدير الذات وشعور عدم القيمة يزيد الاستعداد للإصابة بـ:",["الهوس","الاكتئاب والقلق الاجتماعي","الفصام","الصرع"],1,"تدمير النظرة الذاتية وتدني القيمة هما الخصائص الرئيسية المعرفية المميزة للقلق والاكتئاب."],["الكفاءة الذاتية (Self-efficacy) تعني:",["سيطرة الآخرين","إيمان الفرد بقدرته على النجاح بموقف","العجز","الإنكار"],1,"باندورا أرسى هذا المفهوم وهو إيمانك ويقينك بأنك تمتلك المهارات للنجاح في مسألة محددة."],["الكبت والإسقاط هما من:",["آليات الدفاع غير الناضجة","مهارات التكيف","آليات التفكير المنطقي","التأقلم الإيجابي"],0,"طبقاً للتحليل النفسي، يعتبر الكبت والإسقاط آليات غير ناضجة للتعامل مع الواقع تؤدي لانفصال الفرد وسوء تكيفه."],["التمكين (Empowerment) للمريض يؤدي إلى:",["العجز","تحسين إدارة المرض وتعزيز الصحة","التبعية","تفاقم المرض"],1,"التمكين يقتضي جعل المريض شريكاً في علاجه مما يزيد من كفاءته الذاتية والتزامه واستقلاليته عن مجرد الاعتماد السلبي."],["التعلق \"غير الآمن\" أو القلق في الطفولة يرتبط في الرشد بـ:",["مناعة نفسية","اضطرابات القلق والاكتئاب","التفوق","السواء"],1,"نظريات التعلق لجون بولبي أثبتت أن عدم شعور الطفل بالأمان الوالدي ينعكس مستقبلاً في شخصية قلقة أو مكتئبة وسوء توافق."],["ذوو المستويات المنخفضة من الكفاءة الذاتية:",["يعشقون التحدي","يجدون التحديات مهددة ويستسلمون","مرنون","لا يتأثرون"],1,"لكونهم لا يثقون في قدرتهم على التعاطي مع الأمور، فهم يرون المشكلات أو التحديات كتهديد غير قابل للتجاوز فينسحبون سريعا."],["الأعراض الذهانية (في العينات غير السريرية) تقع على:",["منفصل تماماً","طيف متصل مع التجارب الطبيعية","تلوث بيئي","لا شيء"],1,"الأبحاث الحديثة اعتبرت أن حتى الأعراض الذهانية تأخذ شكل طيف (Spectrum) يتدرج من الطبيعي وصولا للمرضي السريري."],["في النموذج المعرفي، القلق يُفسر بأنه:",["رغبات مكبوتة","المبالغة في تقدير الخطر","نقص الدعم","تعزيز سلبي"],1,"النظرية المعرفية للقلق تؤكد أن مريض القلق يرى المثيرات العادية مهددة جداً (تضخيم الخطر) مع تبخيس قدراته لدرئها."],["دراسة \"نوتارو وجيلمان\" أظهرت أن الناس ينظرون للأسباب البيولوجية والنفسية كأنها:",["متطابقة","متباينة وثنائية","لا وجود لها","وهم"],1,"أظهرت الدراسة أن عامة الناس يفصلون بين الجسد والنفس وكأنهما ثنائية متعارضة وأمور متباينة، وهو فصل يرفضه العلم الحديث."],["التجنب المرضي يتم تدعيمه سلوكياً عن طريق:",["زيادة الاكتئاب","تقليل القلق مؤقتاً","العقاب","التعلق"],1,"من منظور سلوكي، التهرب والانعزال يقلل الضغط والتوتر بشكل فوري مما يعززه ويكافئه سلبياً ليتحول لأسلوب حياة مستمر."],["الإنهاك النفسي ينتج عن:",["نقص الدوبامين","التعرض المستمر للضغوط مع ضعف التكيف","التعلق الآمن","الكفاءة الذاتية"],1,"الاحتراق هو نتاج مزيج من متطلبات مرهقة طويلة المدى دون امتلاك استراتيجيات دعم وتكيف قوية وفعالة."],["التركيز على \"الأفكار التلقائية السلبية\" يميز الاتجاه:",["السلوكي","المعرفي","التحليلي","الإنساني"],1,"المدرسة المعرفية تبحث في الحوار الداخلي والأفكار التلقائية التي تصنع الرد العاطفي عند الفرد إزاء الأحداث المجردة."],["يرى الاتجاه السلوكي أن السلوك غير السوي:",["موروث","مكتسب بالتعلم والتعزيز","ناتج عن سحر","خلل هرموني"],1,"كل سلوك بالنسبة للرؤية السلوكية متعلم ومكتسب عبر الاقتران الكلاسيكي أو التعزيز الإجرائي والعقاب."],["\"الأنا\" يفشل في التوفيق بين مطالب \"الهو\" و\"الأنا الأعلى\" في الاتجاه:",["المعرفي","السلوكي","التحليلي","البيولوجي"],2,"هذا هو التفسير الفرويدي البحت لظهور أعراض العصاب (القلق والهستيريا) كعلامة لانهيار وتصدع دفاعات الأنا في إرساء الوفاق."],["العلاقة بين العمليات النفسية والتمكين مشتركة بين:",["المرضى فقط","جميع الشباب","كبار السن فقط","الأطباء فقط"],1,"جميع فئات الشباب، سواء سريرية أم غير سريرية، يحقق لها التمكين النفسي والقدرات المعرفية الفعالة نفس النتائج في الحماية النفسية."],["مركز التحكم الداخلي يمثل إيمان الفرد بقدرته على:",["الطيران","التحكم في نتائج الأحداث","قراءة الأفكار","السيطرة على الآخرين"],1,"جوليان روتر صاغ مركز التحكم كعنصر حاسم في الرفاهية والصحة، حيث يؤمن مركز التحكم الداخلي بمسؤولية الذات في تغيير الظروف."],["تطوير مهارات التأقلم في المراهقة يساعد على:",["زيادة المرض","تعزيز المرونة الشخصية","العجز","الانعزال"],1,"التأقلم الإيجابي (Coping skills) يساهم بشكل وقائي في بناء حصانة نفسية صلبة ومرنة تجاه التحديات القادمة في مرحلة الرشد."],["الدعم النفسي والاجتماعي يقلل من:",["الكفاءة","العزلة الاجتماعية المرتبطة بالذهان","الوعي","التمكين"],1,"التعزيز بشبكات داعمة يقوض أعتى أسباب تفاقم المرض العقلي ألا وهو الانسحاب والعزلة والفراغ الذاتي."],["العوامل النفسية لا تعمل بمعزل بل تتفاعل مع:",["الفراغ","الاستعداد الوراثي والعوامل البيئية","السحر","الطقس"],1,"وهذا يعود لب الجوهر التكاملي الحديث والذي يتضمن حتمية تداخل العوامل البيولوجية (الوراثية) مع الضغوط والمحيط (البيئة)."],["المرضى الذين يشعرون بالتمكين غالباً ما يكون لديهم وعي بـ:",["عجزهم","قدرتهم على اتخاذ خيارات مستنيرة","فشلهم","حتمية المرض"],1,"التمكين يقتضي بناء رؤية مستبصرة من الفرد لخياراته وقدرته على تغيير مسار ظروفه بصورة فعالة لا سلبية."],["الإيمان القوي بأن الجهد غير مجٍد يسمى:",["الكفاءة","العجز المتعلم","التمكين","الإسقاط"],1,"مرتبط بتكرار الفشل وتعلم التوقف عن رد الضرر عن الذات لاعتقاد وهمي بعدم السيطرة الكلية للاستجابات (سليجمان)."],["الأخطاء المعرفية وتشويه التفكير يؤديان للاضطراب حسب النموذج:",["التحليلي","السلوكي","المعرفي","الوراثي"],2,"كمعالجة غير منطقية للمعلومات مثل (الشخصنة، قراءة الأفكار، أو التفكير الأبيض والأسود)؛ كلها شتائم معرفية."],["التفسير المعرفي للحدث هو ما يسبب الاضطراب وليس:",["التفكير","الحدث ذاته","التعلم","الاستعداد"],1,"ليس الموقف بحد ذاته ما يستثير حزن أو قلق الإنسان بل تفسيره الداخلي ومنظوره الخاص له وفقا للاتجاه المعرفي."],["الكفاءة الذاتية المنخفضة تؤدي إلى:",["الاستسلام السريع","المثابرة","الإنجاز","التفاؤل"],0,"ضعف الكفاءة والإيمان الذاتي يُشعر الفرد بالتهديد الشديد للموقف وضعف الحيلة ويقوده إلى الاستسلام سريعاً."],["يعتقد الاتجاه السلوكي أن السلوكيات المضطربة مكتسبة من خلال التعلم والتعزيز.",["صح","خطأ"],0,"نعم، مثل الفوبيا المكتسبة بالاشتراط وتجنب المسؤوليات المكتسب بالتعزيز السلبي."],["العجز المتعلم يشير إلى حالة يتوقف فيها الفرد عن المحاولة لإيمانه بعدم جدوى جهوده.",["صح","خطأ"],0,"نعم، وهو المفهوم الأساسي للاكتئاب الذي طوره (سليجمان)."],["الكبت والإنكار آليات دفاعية ناضجة تساعد في تحقيق الصحة النفسية الإيجابية.",["صح","خطأ"],1,"خطأ، تعتبر في التحليل النفسي آليات دفاع أولية أو غير ناضجة تعكس فشل التعامل الإيجابي."],["الكفاءة الذاتية العالية ترتبط بزيادة الرفاهية الشخصية والقدرة على مواجهة التحديات.",["صح","خطأ"],0,"صحيح، وهذا المفهوم فيصل في زيادة مقاومة الفرد وتجاوزه للصدمات بوجود يقين بقدرته."],["التمكين (Empowerment) يُعتبر عنصراً جوهرياً في تعزيز الصحة النفسية وإدارة المرض.",["صح","خطأ"],0,"نعم، إعطاء دور شريك وإيجابي للمريض يبطئ التدهور ويرفع فاعلية العلاج."],["النموذج المعرفي يرى أن الخلل يكمن في الحدث الضاغط ذاته وليس التفسير المعرفي له.",["صح","خطأ"],1,"خطأ، النموذج المعرفي يرى أن التفسير المشوه (Cognitive Distortion) هو لب المرض وليس الحدث المجرد."],["أنماط التعلق غير الآمن في الطفولة تزيد من قابلية الإصابة باضطرابات عقلية.",["صح","خطأ"],0,"صحيح، تؤدي للقلق الاكتئاب في الرشد وتؤثر في تشكيل علاقات غير مستقرة."],["النموذج الطبي الحيوي الصارم يرى أن كل الاضطرابات ناتجة عن مشاكل بيولوجية فقط.",["صح","خطأ"],0,"صحيح، ولهذا استوجب تحديثه إلى منظور تكاملي لقصوره عن تفسير المعطيات البيئية والنفسية الأخرى."],["مركز التحكم الداخلي يعكس إيمان الفرد بقدرته على التحكم في نتائج الأحداث.",["صح","خطأ"],0,"صحيح، ويُعد ذلك مؤشراً للصحة الإيجابية والمرونة العقلية مقابل مركز التحكم الخارجي المعول على الحظ والقدر."],["العوامل النفسية لا تتفاعل أبداً مع الاستعداد الوراثي في تكوين الاضطرابات.",["صح","خطأ"],1,"خطأ، تتفاعل بقوة وهذا ما يرسخه نموذج الاستعداد-الضغط (Diathesis-stress)."],["الصراعات اللاشعورية غير المحلولة هي محور الاتجاه التحليلي لتفسير الاضطراب.",["صح","خطأ"],0,"صحيح، حيث تُعتبر العصابية والحيل الدفاعية المعبر الرئيسي لهذه الصراعات المكبوتة."],["التعلق الآمن في الطفولة يزيد من قابلية الإصابة بالاضطرابات العقلية.",["صح","خطأ"],1,"خطأ، العكس تماماً، التعلق السوي والآمن يهب حصانة نفسية للطفل لمواجهة العالم."],["يعتبر الاتجاه السلوكي أن الفوبيا ناتجة عن اقتران مثير محايد بخبرة مؤلمة.",["صح","خطأ"],0,"صحيح، بناءً على مبدأ الاشتراط الكلاسيكي القائم على الاقتران المتكرر أو أحادي التجربة والصدمة."],["التجنب المرضي يتم التخلص منه إذا قلل القلق مؤقتاً.",["صح","خطأ"],1,"خطأ، بل يزيد ويرسخ السلوك التجنبي لأنه كوفئ سلبيا بتقليل القلق بشكل مؤقت وفوري."],["العجز المتعلم حالة نفسية يزيد فيها الفرد من جهوده ومحاولاته.",["صح","خطأ"],1,"خطأ، الفرد هنا يشعر بعدم جدوى أي محاولة فيستسلم ويتوقف عن أي استجابة لمواجهة الخطر."],["صورة الذات السلبية مرتبطة بزيادة احتمالية اضطرابات القلق الاجتماعي.",["صح","خطأ"],0,"صحيح، فالاعتقاد النفسي المعرفي المشوه بالذات ينتج قلقاً من رفض وحكم الآخرين."],["التفكير الثنائي يفصل بين العقل والجسد في تفسير الأمراض.",["صح","خطأ"],0,"صحيح، وهو فصل دحضه العلم الحديث الذي أثبت تفرع وتداخل الأمراض نفسيا وعضويا معاً."],["التمكين يقلل من الكفاءة الذاتية لدى الشباب.",["صح","خطأ"],1,"خطأ، التمكين بالضرورة هو عملية بنائية ترفع وتعزز الكفاءة الذاتية للفرد."],["الكفاءة الذاتية العالية تجعل الأفراد يعتبرون التحديات تهديداً يجب تجنبه.",["صح","خطأ"],1,"خطأ، الكفاءة المرتفعة تجعل الفرد يواجه التحدي بل ويستمتع باجتيازه والقدرة على حله."],["الأشخاص ذوي الكفاءة المنخفضة غالباً ما يستسلمون عند مواجهة التحديات.",["صح","خطأ"],0,"صحيح، ضعف المعرفة بالذات وتقديرها المنخفض يقود حتماً للاستسلام لعدم اليقين بالإمكانية."]]},{"title":"الفصل الرابع: الأسباب البيئية للاضطرابات النفسية","capsule":"تُركز المسببات البيئية على دور الأسرة كالإهمال والتفكك وضعف الروابط، والمحددات الهيكلية الاجتماعية كالفقر والحرمان والوصمة والبيئة الحضرية كعوامل ضاغطة على الجينات، مفجرةً للاضطراب (نموذج الاستعداد - الضغط).","questions":[["من العوامل الأسرية المسببة لاضطرابات القلق:",["الحماية المفرطة والتسلط","الدفء","المرونة","الدعم"],0,"الحماية المفرطة تمنع الطفل من التكيف، وبالتالي تجعله دوماً متأهبا للتهديد (قلق) في غياب والديه."],["التفكك الأسري والطلاق يساهم في ظهور:",["الفصام الوراثي","الاكتئاب واضطرابات التعلق","الصرع","التوحد"],1,"تزعزع استقرار الأسرة وغياب أحد الأبوين أو البيئة الأسرية المنسجمة يورث الاكتئاب وخلل التعلق في الطفولة."],["خبرات الإساءة الجسدية والجنسية في الطفولة ترتبط بـ:",["PTSD","الزهايمر","كورساكوف","التخلف العقلي"],0,"وهو اضطراب كرب ما بعد الصدمة (PTSD) بسبب تجاوز الحدث لمقدرة الطفل على استيعاب تلك الفظائع المادية والمعنوية."],["الفقر والحرمان الاجتماعي يزيدان احتمالية الإصابة بـ:",["الاكتئاب والقلق","الفصام","الوسواس","الذكاء"],0,"الضغوط المالية والحسية الناجمة عن الفقر المزمن تستنفد المرونة النفسية وتزيد التعرض للاكتئاب والقلق."],["نموذج (الاستعداد - الضغط) يعني:",["الضغط يسبب المرض","تفاعل الاستعداد الكامن مع الضغوط البيئية","الوراثة هي الكل","البيئة غير مهمة"],1,"وهو الإطار العمدة لتفسير المرض النفسي: لابد من الاستعداد (الجيني/البيولوجي) كشرط أولي، ولابد من مفجر وهو الضغط (البيئة) لظهور المرض."],["الأشخاص في المناطق الحضرية مقارنة بالريف أكثر عرضة لـ:",["الفصام","الهوس","الرهاب","لا فرق"],0,"أثبتت الدراسات ارتباط زيادة خطر الفصام بالعيش في المدن المزدحمة لزيادة التلوث والمحفزات المعقدة المؤثرة منذ الطفولة."],["التنشئة الحضرية تؤثر على استجابة:",["القشرة الحزامية الأمامية","الطول","لون الشعر","شكل العين"],0,"الاستجابة القوية والضاغطة المستمرة تؤثر عضويا على تشكيل هذه المناطق المشاركة في معالجة الضغط العاطفي."],["المساحات الخضراء تقلل التوتر عبر:",["استعادة الانتباه وتخفيف الضرر","زيادة الضوضاء","العزلة","التلوث"],0,"قرب المساحات الخضراء يعطي إراحة معرفية للمخ (انتباه) مع تنقية للملوثات البيئية العصبية (تخفيف الضرر)."],["دراسات التوائم المتطابقة وغير المتطابقة تستخدم لدراسة:",["الجغرافيا","التفاعل بين الجينات والبيئة","التاريخ","الفيزياء"],1,"مفيدة جدا لأنها تتيح مقارنة الاختلاف بموجب عامل البيئة بعد تثبيت التطابق الجيني شبه الكامل للتوأم المبكر."],["تلوث الهواء يرتبط بـ:",["الإجهاد التأكسدي والتهاب الجهاز العصبي","صحة القلب","المناعة","السعادة"],0,"الملوثات البيئية تُسرع الاستجابة الالتهابية المباشرة وتلف الأوعية الدموية في المخ، متسببة بأمراض دماغية ونفسية كالاكتئاب."],["التعرض للضوضاء يرتبط بإفراز هرمونات مثل:",["الأنسولين","الكورتيزول والأدرينالين","الميلاتونين","السيروتونين"],1,"لأن الضوضاء تحفز استجابة الـ (Fight or Flight) المستمرة والمزمنة بلا توقف وتفرز هرمونات الإجهاد العالية."],["نظرية \"تخفيف الضرر\" للمساحات الخضراء تعني:",["الحد من التلوث والضوضاء","زيادة السمنة","إضعاف التماسك","زيادة العزلة"],0,"تخفيف الضغط يعني وجود حاجز نباتي يخفف من أثر محركات الإجهاد السامة بيئيا وعصبياً في التخطيط الحضري والحياة."],["العزلة الاجتماعية تؤدي إلى:",["السعادة","زيادة القابلية للاكتئاب","التفوق","المرونة"],1,"البشر كائنات اجتماعية، الحرمان التام من شبكة العلاقات يولّد مشاعر الوحدة وفقدان الاتجاه وبالتالي تدهور المزاج والتكيف."],["الضغوط المدرسية كالتنمر تسهم في:",["اضطرابات القلق والتكيف","الشلل الرعاش","الصرع","الخرف"],0,"التنمر يُعد صدمة معنوية مستمرة في بيئة الأطفال والمراهقين ترتبط باضطرابات القلق والانعزال والصدمات المبكرة."],["الوصمة الاجتماعية للمرض النفسي تؤدي إلى:",["سرعة الشفاء","منع طلب المساعدة وتفاقم المرض","الدعم","الثقة"],1,"وصمة العار والخوف من تصنيف المجتمع تجعل المريض يكابر ويتجنب الذهاب للطبيب المعالج مما يفاقم سوء حالته وتعاظمها."],["الإجهاد أثناء النمو العصبي قبل الولادة قد يساهم في:",["صغر حجم الحصين (بالفصام)","زيادة الذكاء","السواء","كبر اللوزة"],0,"التعرض للضغوط ونقص الموارد أثناء نمو دماغ الجنين له أثر عصبي تدميري يساهم لاحقا في الفصام وصغر الحصين."],["تقييم الإجهاد لـ (لازاروس وفولكمان) يعتمد على:",["البيئة","الحساسية الفردية والكفاءة الذاتية","التلوث الموضوعي فقط","الوراثة"],1,"يركز نموذجهم على المعالجة المعرفية الفردية للموقف، وهي من يحدد إن كان تهديدًا يفوق القدرة (إجهاد) أم لا."],["في اضطراب تعاطي الكحول، مبيعات الكحول بالمنطقة تعتبر:",["علاجاً","عاملاً بيئياً يُعدل التأثير الجيني","غير مؤثرة","وقاية"],1,"العامل البيئي والمتمثل في الوفرة وارتفاع المبيعات ينشط أو يسهل الجينات والقابلية الوراثية المحتملة للإدمان."],["عدم المساواة الصحية والمستوى الاقتصادي من:",["المحددات الهيكلية","الأسباب الجينية","الفسيولوجية","المناعية"],0,"تندرج تحت المحددات الاجتماعية وهي السياسات والهيكل الشامل لحفظ صحة السكان (Social Determinants of Health)."],["بيئة العمل غير المستقرة والضاغطة تسهم في:",["الاحتراق النفسي والاكتئاب","السعادة","التوافق","السواء"],0,"الضغوط الوظيفية (Occupational stress) كطول ساعاتها وتأثيرها والتنمر داخلها تعد من أقوى مدمرات الرفاهية المعنوية والنفسية."],["من العوامل البيئية المسببة لاضطرابات الشخصية الحدية:",["الدعم","الصدمات والإساءة المبكرة","التفوق","الثراء"],1,"البنية العاطفية المضطربة في هذه الشخصيات مردها بشكل بالغ وحاسم لعوامل طفولة قاسية كالإهمال والانفصال الانفعالي المبكر والتحرش."],["الضغوط الحياتية المزمنة تشمل:",["فقدان وظيفة ليوم","الفقر والبطالة المستمرة والمرض","رسوب","سفر"],1,"وهي عوامل تفوق قدرة الفرد على التحمل لأنها مسببات ضغط (Chronic stress) ليست حادة أو مؤقتة، بل طويلة الأمد."],["الثقافة تلعب دوراً في:",["كيفية التعبير عن الاضطراب ووصمته","فصيلة الدم","الوراثة","لون العين"],0,"نعم، تباين الثقافات يؤثر على (تطبيب) أو (علاج) بعض الأعراض، بل وكيف يُفصح الفرد عن آلامه أو يتم وصمها."],["التفاعل بين الخلفية الوراثية والبيئة في الفصام يساهم بنسبة تصل إلى:",["%10","%60","%100","%0"],1,"التأثير البيئي حاسم في تعديل الخطر الجيني الوراثي في مرض الفصام ويساهم لنسب تقريبية تصل لـ60% طبقا لبعض النماذج والدراسات التوأمية."],["دراسة روز (الكحول) أظهرت أن تأثير الوراثة يكون أكبر في البيئات:",["الريفية","الحضرية","البدوية","المغلقة"],1,"في المدن (البيئات الحضرية)، يكون للوراثة مجال أوسع للتعبير نتيجة ضعف القيود وتوفر المواد الإدمانية بسهولة مقارنة بالريف."],["من العوامل البيئية المحيطة المؤثرة على الصحة النفسية:",["الضوضاء وتلوث الهواء","الجينات","الدم","الناقلات"],0,"التسمم والضجيج هما التلخيص الكلاسيكي الشائع للملوثات الفيزيائية المساهمة في زيادة الضغط والاعتلال الفردي والسلوك العدواني."],["نظرية \"استعادة الانتباه\" تتعلق بـ:",["التلوث","المساحات الخضراء والسمات الطبيعية","الضوضاء","الفقر"],1,"قرب الطبيعة والأشجار والمحيط الحيوي يُعطي العقل استراحة ويجدد الانتباه الطوعي المجهد ويزيد القدرات الفكرية والصفاء."],["\"بناء القدرات\" في المساحات الخضراء يعزز:",["النشاط البدني والتماسك الاجتماعي","العزلة","الاكتئاب","الإدمان"],0,"المساحات الخضراء تساهم كمتنفس للرياضة والتفاعل الجماعي (Social Cohesion) مما يدفع القلق والانعزال والصحة السلبية."],["الاضطرابات العصبية والنفسية مسؤولة عن حوالي:",["%1 من عبء المرض","%14 من عبء المرض عالمياً","%90","%50"],1,"الأمراض العقلية والعصبية تعتبر من أكثر الأمراض المعيقة، فهي تحتل نسبة هائلة من العبء العالمي وتأثير الحياة الوظيفية."],["التعرض للضوضاء يعتبر:",["مهدئاً","عامل إجهاد مزمن يثير استجابة للضغط النفسي","علاجاً","غير مؤثر"],1,"ينشط الاستثارة الأوتونومية الدائمة للجهاز العصبي الودِّي الذي يفرز الكورتيزول ويستنفد القدرة التكيفية للمخ والبدن."],["أساليب التربية الوالدية المتسلطة تزيد من احتمالات اضطرابات القلق والاكتئاب.",["صح","خطأ"],0,"صحيح، لإنها تكبت الطفل وتلغي استقلاليته وتعزز الكآبة وشعور الذنب والقلق الدائم والتحكم الخارجي لحياته."],["التفكك الأسري يسبب اضطرابات انفعالية قصيرة المدى فقط ولا يؤثر أبداً على الشخصية.",["صح","خطأ"],1,"خطأ، له تأثيرات بالغة المدى الطويل ويزعزع بناء الشخصية ويورث اضطراب التعلق والعلاقات المضطربة مستقبلا."],["الإهمال العاطفي في الطفولة من العوامل المرتبطة باضطرابات الشخصية.",["صح","خطأ"],0,"صحيح، التجاهل المبكر لاحتياجات الطفل العاطفية يعيق نضج التنظيم الذاتي ويقوده للاضطراب الحدي والانعزالي."],["الضغوط المدرسية كالتنمر ليس لها تأثير يذكر على الصحة النفسية للمراهقين.",["صح","خطأ"],1,"خطأ، تعتبر عاملاً أساسياً في تكوين الاكتئاب والانتحار ورهاب التفاعل الاجتماعي للمراهق والشاب."],["الوصمة الاجتماعية تزيد من احتمالية طلب المساعدة النفسية مبكراً.",["صح","خطأ"],1,"خطأ، بل تمنع وتردع المصاب من البوح والالتجاء للعيادات مما يفاقم من تعقد وشدة مرضه وتكاليفه لاحقاً."],["نموذج (الاستعداد-الضغط) ينفي دور العوامل البيئية ويؤكد الجينات فقط.",["صح","خطأ"],1,"خطأ، بل يدمجهما معاً فلا ينشط المرض (الجين/الاستعداد) إلا إذا ضغط عليه الزناد (البيئة)."],["العيش في المدينة المزدحمة يرتبط بزيادة نشاط اللوزة الدماغية.",["صح","خطأ"],0,"صحيح، لأن الزحام وكثافة المعطيات يضع العقل في حالة تأهب وإجهاد اجتماعي مفرط يرتبط بتنشيط حوفي مضاعف."],["المساحات الخضراء ليس لها أي دور في تقليل الإجهاد النفسي.",["صح","خطأ"],1,"خطأ، هي تُفعل استعادة الانتباه وتهدئة المزاج وتشجيع الرياضة وتواصل الجيران."],["تلوث الهواء يؤثر على الجهاز العصبي المركزي من خلال الإجهاد التأكسدي.",["صح","خطأ"],0,"صحيح، الجزيئات السامة تتلف الأنسجة الدماغية والأوعية الدموية مباشرة محفزة أمراضا كنقص الانتباه والذهان."],["دراسات التوائم المتطابقة وغير المتطابقة لا تفيد في دراسة التفاعل بين الجينات والبيئة.",["صح","خطأ"],1,"خطأ، هي الأساس الذهبي في البحوث لفصل ما إذا كان الأثر الجيني هو الحاسم أم البيئي."],["التعرض المستمر للضوضاء يقلل من إفراز الكورتيزول والأدرينالين.",["صح","خطأ"],1,"خطأ، يزيد بشكل إجهادي متبوعاً بحالة استنفار شامل تتعب أجهزة القلب والتنفس وضغط الدم والجهاز العصبي."],["الحساسية الفردية تحدد التقييم المعرفي للضغوط البيئية.",["صح","خطأ"],0,"صحيح، ليس الحدث وحده هو الحاسم بل كيف يُقَيّمه ويفسره הפرد ويحسه بناء على كفاءته الذاتية الفردية وخبراته."],["بيئة العمل المتميزة بضعف التقدير المهني تزيد من الاحتراق النفسي.",["صح","خطأ"],0,"صحيح، الاحتراق النفسي (Burnout) يتوهج بسبب ضعف المكافآت وكثرة الضغوط والظلم الوظيفي المستمر."],["الفقر والبطالة من العوامل البيئية القوية المرتبطة بارتفاع معدلات الاكتئاب.",["صح","خطأ"],0,"صحيح، نقص الموارد وعدم اليقين وضعف الحيلة المتولدة تخلق بؤر ضغط مزمن مستنزف للمكانيزمات التكيفية الفردية."],["التفاعلات اللاجينية (Epigenetics) تتوسط تأثيرات البيئة على تنظيم الجينات.",["صح","خطأ"],0,"صحيح، فالجين ممكن أن يُقفل (Mutated/Silenced) أو يُنشط بواسطة كيميائيات وضغوط بيئية طارئة تترجم التأثير دون تغيير في الشفرة الديموغرافية."],["العوامل البيئية تعمل بمعزل تام عن العوامل البيولوجية والنفسية.",["صح","خطأ"],1,"خطأ، لا يوجد عزل، كل عامل يترجم أثره وتفاعله في وجود ومساندة العوامل الأخرى كلياً."],["الدعم الاجتماعي يسهم بفعالية في الحد من العزلة الاجتماعية.",["صح","خطأ"],0,"صحيح، الروابط القوية تمثل درع حماية للتكيف والتنفيس ومقاومة الاكتئاب والقلق."],["الأشخاص الذين يعيشون في بيئات حضرية أقل عرضة للفصام من سكان الريف.",["صح","خطأ"],1,"خطأ، بل الدراسات تؤكد أنهم أكثر عرضة، وذلك بسبب كثافة الضغط والإجهاد الاجتماعي والعزلة في الزحام."],["تأثيرات الجينات على استهلاك الكحول تكون أكبر في البيئات ذات الهجرة العالية والمبيعات المرتفعة.",["صح","خطأ"],0,"صحيح، التوفر المادي يطلق العنان للقابلية الوراثية وتعبير الجينات."],["\"التخفيف من الضرر\" هو إحدى آليات تأثير المساحات الخضراء لتقليل التلوث والضوضاء.",["صح","خطأ"],0,"صحيح، حيث تُشكل حاجزاً فيزيقياً وطبيعياً مصفياً ومقللاً للتلوث، ومهدئاً للإجهاد العام بالبيئة."]]},{"title":"الفصل الخامس: المنظور العام وأساليب التقييم","capsule":"يطرح هذا الفصل مقاربة علم الاجتماع للصحة النفسية، والتأثير البالغ للتطبيب (Medicalization)، وعمليات التقييم عبر المقابلات والاختبارات كـ DSM، والعلاقة بين الضغط والدعم الاجتماعي والرفاه العام.","questions":[["المنهج السوسيولوجي يدرس الصحة النفسية كجانب من:",["الكيمياء","الظروف الاجتماعية","الجينات","اللاشعور"],1,"علم الاجتماع يهتم بالظروف الاجتماعية المؤثرة على الفرد في بيئته، مثل مستوى الدعم، والأدوار، والتفكك."],["دراسة إميل دوركهايم \"الانتحار\" ركزت على تأثير:",["الروابط والاندماج الاجتماعي","السيروتونين","الطفولة","المناخ"],0,"إميل دوركهايم أثبت أن تماسك أو تفكك الروابط المجتمعية هو محدد جوهري وقوي لقرار وتوجه الإنسان النفسي ووصوله للانتحار."],["الانتحار \"الأناني\" عند دوركهايم يكثر لدى:",["المندمجين","المعزولين اجتماعياً","المتزوجين","الأثرياء"],1,"الأفراد المنفصلون عن الروابط والتضامن الاجتماعي يعانون غربة وعزلة قاسية تدفعهم له."],["الانتحار \"الفوضوي\" يرتبط بـ:",["العزلة","التوقعات غير الواقعية في فترات الازدهار","الفقر","المرض العقلي"],1,"ويعرف بالأنومي (Anomie)، ويحدث حين يختل تنظيم المجتمع وتنعدم الضوابط ويسيل سقف التوقعات."],["مقياس CES-D يستخدمه علماء الاجتماع لقياس:",["الذكاء","حالات الضيق العام والرفاهية","الفصام","الإدمان"],1,"هو أداة مسحية شائعة لرصد الحالة المزاجية، والاكتئاب الخفيف، والضيق العام في عينات السكان العادية."],["\"التطبيب\" (Medicalization) يعني:",["العلاج بالصلات","اعتبار المشكلات السلوكية أمراضاً طبية","تجاهل المرض","رفض الدواء"],1,"توسيع النطاق الطبي ليحتوي ظواهر طبيعية أو مشكلات سلوكية بحتة ويصفها بأنها تحتاج تدخلاً دوائياً وتشخيصاً."],["الزيادة الكبيرة في تشخيص \"اضطراب ثنائي القطب\" لدى الأطفال تعزى لـ:",["فيروس","جدوى الأدوية في تهدئة السلوك","الوراثة","الإشعاع"],1,"زيادة التشخيص ارتبطت بالتأثير السريع والمهدئ للأدوية القوية على السلوكيات المضطربة للأطفال وراحتها للأهل وللمعلم، لا لوجود اكتشاف جيني."],["تعتمد المقابلة الإكلينيكية المنظمة (SCID) على:",["أسئلة عشوائية","أسئلة محددة ومتسلسلة","التنويم","الإسقاط"],1,"أداة مقننة تهدف لتوحيد وتقنيين الأسئلة بين الفاحصين لتحقيق تشخيص ثابت لا يتأثر بذاتية الطبيب المفرطة."],["مقياس بيك (BDI) يقيس:",["القلق","شدة أعراض الاكتئاب","الذكاء","الشخصية"],1,"هو مقياس عالمي ومقنن واسع الاستخدام يعكس مدى شدة وجدية مشاعر الاكتئاب والانتحار والفراغ لدى الفرد."],["مقياس MMPI-2 يستخدم لـ:",["قياس الذكاء","تشخيص اضطرابات الشخصية وكشف التزييف","قياس القلق","الذاكرة"],1,"استبيان شخصية موضوعي يعتمد على مئات الأسئلة لاختبار سمات الشخصية، والاضطرابات الذهانية والعصابية ودقة المجاوب."],["مقياس سبيلبرجر (STAI) يميز بين:",["الذكاء اللفظي والعملي","القلق كحالة والقلق كسمة","الاكتئاب والهوس","الفصام والتوحد"],1,"يفرق بدقة بين القلق الذي يعيشه الفرد كلحظة عابرة (State) وبين القلق المتجذر كطبع في شخصيته (Trait)."],["مقياس وكسلر (WAIS) يستخدم لتقييم:",["العاطفة","القدرات المعرفية العامة والذكاء","السلوك","اللاشعور"],1,"هو المقياس الذهبي الكلاسيكي المعتمد لتقييم الذكاء للراشدين ويغطي المهارات اللفظية والأدائية العملية."],["مقياس SCL-90-R هو:",["مقياس للذكاء","أداة مسحية شاملة للأعراض النفسية","اختبار إسقاطي","اختبار عصبي"],1,"عبارة عن قائمة متعددة لقياس وتقييم زمرة واسعة من الأعراض (الاكتئاب، القلق، العدائية، وغيرها) دفعة واحدة."],["نسبة من يتلقون رعاية صحية نفسية في الدول منخفضة الدخل:",["%100","نسبة ضئيلة جداً (ثلث المرضى)","%80","%50"],1,"الفجوة التشخيصية والعلاجية صادمة في تلك الدول لضعف التمويل والوصمة وقلة المتخصصين (الفجوة تتجاوز بكثير الثلث)."],["الفجوة التشخيصية في الرعاية الأولية أدت لإصدار:",["أدوية جديدة","نسخ مختصرة من التصنيفات","منع الأطباء","زيادة المستشفيات"],1,"لتبسيط وتسريع التشخيص لغير المختصين (mhGAP ونسخ ICD للرعاية الأولية) لتدارك قلة الأطباء النفسيين."],["التركيز في البيئات السريرية يكون غالباً على:",["حالات الضيق العام","أنواع محددة وثنائية من الأمراض النفسية","الرفاهية","الدعم"],1,"في المشافي والعيادات يكون التركيز منصباً لحالات اضطراب محددة وصارمة كالفصام والاضطراب ثنائي القطب والاكتئاب السريري العميق."],["من العوامل الاجتماعية المرتبطة بالصحة النفسية:",["الجينات","درجة الاندماج الاجتماعي وأنظمة المعتقدات","الهرمونات","الناقلات"],1,"مدى تماسك علاقاتك، وأدوارك، ومفاهيم مجتمعك الثقافية تحدد بشكل حاسم مستوى رفاهيتك ومزاجك."],["الزواج يؤدي وظائف تنظيمية تعزز:",["الانحراف","الامتثال للمعايير وتقليل الضغوط","الاكتئاب","العزلة"],1,"الزواج يخلق دمجاً وترابطاً وقواعد تبعد الفرد عن التخبط المفرط وتمنحه دعماً عاطفياً ومؤسساتياً يقيه الضغوط التراكمية."],["الفئات التشخيصية المعاصرة (DSM) أصبحت:",["أقل استخداماً","أساسية لاتخاذ قرارات العلاج والسياسات","مرفوضة","مقتصرة للأطباء"],1,"بات التشخيص الرسمي جواز سفر للحصول على التمويل، التأمين، التدخل العلاجي والقرارات القانونية عالمياً."],["العاملون الصحيون غير المتخصصين يقدمون خدمات الصحة النفسية بنسبة:",["%10","أكثر من %90 عالمياً","%50","%0"],1,"الغالبية الساحقة من الرعاية الأولية والنفسية البسيطة يقودها موجهون، أطباء أسرة، وممرضون، نظراً لندرة الطبيب النفسي المختص."],["يعتبر فقدان الروابط الاجتماعية (كالطلاق) سبباً لـ:",["السعادة","تزايد مستويات الضيق النفسي","التوافق","الذكاء"],1,"غياب التماسك وفقد المشاركة والدعم والمؤسسة المتوازنة يفجر صراعات ضاغطة تزيد حتما من الاكتئاب والضيق."],["الضغوطات الشديدة (كالجرائم والكوارث) تعتبر من:",["الأسباب البيولوجية","الأسباب القوية لتدهور الصحة النفسية","الوراثة","الوقاية"],1,"الأحداث الطارئة الشديدة تهدد الكيان النفسي والوجودي وتتجاوز مكانيزمات التأقلم وتتسبب باضطراب حاد."],["الثقافة تشمل:",["الجينات","أنظمة المعتقدات والقيم والمعاني المشتركة","الأدوية","الهرمونات"],1,"تحديد المرض النفسي أو ما يعنيه السلوك الغريب يختلف جذريا عبر الزمان والجغرافيا وفق المنظومة الثقافية والرمزية الحاكمة."],["مقاييس علماء الاجتماع (مثل CES-D) محدودة لأنها:",["تقيس الأمراض بدقة","لا تقيس مؤشرات كالإدمان أو الهلوسة","مكلفة","صعبة"],1,"وهي تعكس فقط الرفاهية والاعتلالات الخفيفة للسكان، بينما تغفل الأمراض الذهانية العميقة كالفصام والهلاوس."],["التشخيص النفسي يهدف إلى:",["الوصم","تحديد طبيعة الاضطراب وشدته تمهيداً للعلاج","استبعاد المريض","العقاب"],1,"أي تشخيص سليم وموثوق (كمؤشر SCID) ليس هدفاً بحد ذاته، إنما بوصلة حتمية لتحديد مسار العلاج الفعال."],["من الضوابط الأخلاقية لتطبيق الاختبارات:",["إفشاء السرية","الحصول على موافقة مستنيرة","التطبيق العشوائي","الترهيب"],1,"التزام الممارس بأخذ الموافقة المستنيرة الواعية، والحفاظ الصارم على سرية العميل، وعدم نشر نتائجه دون توثيق مبني."],["الاختبارات العصبية النفسية تستخدم في حالات:",["الفصام","إصابات المخ والخرف والاضطرابات العصبية","الرهاب","القلق العام"],1,"تقيس الانتباه والتذكر والإدراك الوظيفي لتحديد وجود خلل عضوي في المخ إثر الخرف والتدخلات والأصابات الدماغية."],["قوائم اضطرابات الشخصية (PD Scales) تستخدم كـ:",["أدوات مسحية مبدئية","علاج نهائي","بديل للمقابلة","اختبار ذكاء"],0,"مجموعة القوائم تستخدم لفرز وتصوير الملامح التشخيصية العامة، ولا تغني عن المقابلة المستفيضة للاضطراب الشخصي."],["تختلف الاستجابات للمشكلات العاطفية في المجتمعات التي توصم المرضى عن تلك التي:",["تقدر العلاج المهني","تزيد الوصمة","تتجاهل","تعاقب"],0,"المجتمعات المتقبلة والتي تزيل الوصمة تدفع مرضاها لمتابعة العلاج مبكرا وتقر بالتفهم المهني بدلاً من الروادع والتخبط."],["التشخيص الحديث يتكامل مع استخدام:",["الحدس","الاختبارات والمقاييس النفسية المقننة","السحر","التخمين"],1,"فالحدس السريري الفردي يمتلئ بالتحيز الذاتي ولا يوفر كمية، لذا التكامل مع مقاييس (BDI/SCL-90) ومقابلات مقننة وموضوعية أمر ضروري."],["المناهج السوسيولوجية تركز على خصائص الدماغ والمواد الكيميائية في تفسير الاضطراب.",["صح","خطأ"],1,"خطأ، المناهج السوسيولوجية تركز على الظروف الاجتماعية والأدوار والضغوط البيئية لا المواد الكيميائية."],["دوركهايم وجد أن المتزوجين ذوي الأطفال أقل عرضة للانتحار من غير المتزوجين.",["صح","خطأ"],0,"صحيح، الروابط والشعور بالمسؤولية والمكانة المندمجة تلعب دورا تكامليا يدفع اليأس ويزيد الصلابة والمواجهة الفردية."],["مقياس CES-D يقيس تشخيصات نفسية دقيقة كالفصام والوسواس القهري.",["صح","خطأ"],1,"خطأ، يقيس فقط حالات ودرجات الضيق العام والشعور بالاكتئاب البسيط ضمن السكان كأداة مسحية لا أداة طبية تشخيصية حاسمة."],["\"التطبيب\" زاد من استخدام الأدوية لعلاج مشكلات كانت تعتبر سابقاً سلوكية بحتة.",["صح","خطأ"],0,"صحيح، حيث تُوضع المظلة البيولوجية على اضطرابات وعذابات نفسية وتكيفية وسلوكية ويوصف لها عقاقير مهدئة وتنميط."],["معدل تشخيص اضطراب فرط الحركة نقص الانتباه انخفض بشكل ملحوظ في العقد الأخير.",["صح","خطأ"],1,"خطأ، إزداد بشكل مريع ليصبح ظاهرة، وأصبح يصنف كاضطراب شائع مفرط، وتم التوجه العام لإسكات السلوك المنفر بالدواء المفرط."],["العاملون في الرعاية الصحية الأولية نادراً ما يقدمون خدمات الصحة النفسية.",["صح","خطأ"],1,"خطأ، الغالبية الساحقة (أكثر من 90%) من الخدمات والأدوية النفسية تصرف من أطباء عامين وأطقم رعاية أولية لا ممارسين نفسيين."],["الاختبارات التشخيصية تقلل من التحيز الذاتي وتوفر قياساً كمياً للأعراض.",["صح","خطأ"],0,"صحيح، استبدال الحكم الحدسي بأدوات مقننة يعطي نتائج وإحصاءات دقيقة وعلمية تكرس الموثوقية والثبات الفحصي."],["المقابلة الإكلينيكية المنظمة تقلل من الاختلافات التشخيصية بين الفاحصين المختلفين.",["صح","خطأ"],0,"صحيح، لأن توحيد الأسئلة والمعايير عبر دليل ثابت كـ(SCID) يجعل النتيجة ثابتة نسبيا سواء طبقها الطبيب (أ) أم (ب)."],["مقياس هاملتون للاكتئاب يُطبقه المريض بنفسه في المنزل كتقرير ذاتي بحت.",["صح","خطأ"],1,"خطأ، مقياس هاملتون (HDRS) مُصمم ليطبقه متخصص مدرب عبر المقابلة، على خلاف (BDI) الخاص بتقرير المريض."],["تفسير نتائج الاختبارات النفسية يجب أن يتم دائماً في ضوء المقابلة والتاريخ المرضي.",["صح","خطأ"],0,"صحيح، لا يصح إطلاقاً الإعتماد على ورقة الاختبار وحدها وتجريد المريض من تاريخه وتفاعله ومقابلته وسلوكه الكلي."],["الأشخاص المندمجون اجتماعياً أقل قدرة على مواجهة التجارب الضاغطة.",["صح","خطأ"],1,"خطأ، الاندماج والشبكات الداعمة (Social integration) تهب وقاية ودفاعاً قوياً وحصانة فائقة لمقاومة الضغط والتكيف مع الفشل."],["الفترات التاريخية والمجتمعات التي يعيش فيها الأفراد تؤثر على احتمالية إصابتهم بالمرض.",["صح","خطأ"],0,"صحيح، الأوبئة النفسية، واشتراطات النجاح، والأنومي (اللارخاء المتوقع)، ومعايير العيب أو السحر كلها محددات تبدل نسب القلق والاكتئاب."],["الدعم الاجتماعي وتلقي التعاطف يعزز من الصحة النفسية ويقلل الضيق.",["صح","خطأ"],0,"صحيح، توفير الشبكات الموثوقة يخفف الفراغ العاطفي ويمتص الصدمة والمكابدة الذاتية ويحول التهديد لمجرد عبء متجاوز."],["اختبار MMPI-2 يستخدم للتمييز بين الاضطرابات العصابية والذهانية واضطرابات الشخصية.",["صح","خطأ"],0,"صحيح، فهو شامل وجوهر تقييمات الشخصية المعقدة في علم النفس السريري وموثوق عالميا ويضم مكشط لمقاييس الكذب والمبالغة."],["مقياس سبيلبرجر يميز بوضوح بين الذكاء اللفظي والذكاء العملي.",["صح","خطأ"],1,"خطأ، هذا وصف اختبار (WAIS)، أما سبيلبرجر فهو مقياس متخصص ومميز لتحديد وقياس خصال القلق (كحالة) والـ (كطبع واسم) في الشخصية."],["الاختبارات العصبية النفسية تُستخدم في تقييم إصابات المخ وحالات الخرف.",["صح","خطأ"],0,"صحيح، تقيم بدقة مدى كفاءة انتباه وذاكرة المريض وبصيرته واستعادته الوظيفية بعد أي حادث مروري أو جلطة او بدء خرف."],["السرية التامة والحصول على موافقة مستنيرة من أهم الضوابط الأخلاقية لتطبيق الاختبارات.",["صح","خطأ"],0,"صحيح، احترام الفرد ووعيه واجتناب نشر وصمه أو أسراره شرط أخلاقي حاكم لكل خطط القياس النفسية وحقوق الخصوصية الطبية."],["النسخ المختصرة من ICD-10 للرعاية الأولية مستخدمة بكثافة ومعروفة في كل العيادات عالمياً.",["صح","خطأ"],1,"خطأ، على الرغم من الإقرار بأهميتها وتهذيبها، ماتزال هذه النسخ مجيولة وغير مترجمة وغير مستخدمة بصورة كبرى في الرعايا الأولية بمدى واسع عالمياً."],["الرفاه النفسي يرتبط بوجود أنظمة تنظيم اجتماعي تعدل رغبات الأفراد.",["صح","خطأ"],0,"صحيح، كما يشير دوركهايم، فالمجتمع ينظم ويحجم غرائز التوقع لدى الإنسان ليحد من صدمته، فالفوضى المطلقة تولد الانحدار."],["العوامل الاجتماعية والثقافية لا تؤثر مطلقاً في طريقة تعريف الأفراد لمشاكلهم النفسية.",["صح","خطأ"],1,"خطأ، الثقافة هي التي تقرر ما إذا كانت مشكلتك هي (مرض) أم (عين وسحر) أم (ضعف شخصي) وهي التي ترشدك للعيادة أو للمشعوذ."]]},{"title":"الفصل السادس: مدخل للاضطرابات العقلية العضوية","capsule":"اضطرابات تعود لأسباب عضوية (تلف بالدماغ، سكتة، نقص أكسجين). تشمل الفقدان التدريجي للذاكرة والخرف والتدهور الوظيفي، وتعد متلازمة كورساكوف وفقدان الذاكرة أمثلة حية لدور المخ العضوي في الوعي.","questions":[["الاضطرابات العضوية ترتبط بـ:",["صراعات نفسية","خلل وظيفي مؤقت أو دائم في الدماغ","إرادة","عزلة"],1,"خلافاً للاضطرابات النفسية البحتة كالقلق، الاضطراب العضوي يُعزى لوجود خلل أو تلف فيسيولوجي في خلايا الدماغ إثر صدمة أو مرض."],["الاضطرابات \"الوظيفية\" يُنظر إليها تقليدياً كـ:",["تلف بنيوي","رد فعل لضغوط بيئية أو نفسية","أورام","عدوى"],1,"الاضطرابات الوظيفية (كالفصام والقلق) تقليديا كانت تُعزى للفشل التكيفي والنفسي، مقارنة بوضوح وديمومة تلف المخ (العضوي)."],["من أسباب الاضطرابات العقلية العضوية:",["السحر","الصدمات ونقص الأكسجين والسموم","الدلع","الفقر"],1,"حوادث السير الشديدة، نقص الأكسجين (الجلطات)، والتسمم المستمر بمواد كالمخدرات هي المسببات الجذرية للتلفيات العضوية العصبية."],["أكثر أنواع الخرف التنكسي التدريجي شيوعاً هو:",["هنتنغتون","الزهايمر","كورساكوف","باركنسون"],1,"يعد ألزهايمر (Alzheimer's) السبب الأكثر انتشارا لمتلازمة الخرف كإعتلال تدريجي يستمر لعقود وترافقه أعراض نسيان وبناء لويحات في المخ."],["أول وظيفة تتدهور عادة في مرض الزهايمر هي:",["المشي","الذاكرة للأحداث الأخيرة","السمع","البصر"],1,"الذاكرة الحديثة (القصيرة) ومشاكل التذكر الفوري هي البوابة الأولى والأشهر للإعلان عن التدهور التدريجي الوبيل في القدرات العقلية."],["يتميز مرض هنتنغتون عن الزهايمر بـ:",["عدم تأثر الذاكرة","ظهوره بسن أصغر ومصاحبته بحركات رقصية","قابليته للشفاء","سببه الإدمان"],1,"هنتنغتون هو مرض نادر يظهر في مقتبل سن الأربعينات، يترافق بجانب الخرف بتدهور وبحركات وحماقات رقصية لاإرادية مريعة."],["الخرف الوعائي (متعدد الاحتشاءات) يرتبط بـ:",["الفصام","ارتفاع ضغط الدم والسكتات الدماغية","الوراثة فقط","القلق"],1,"يتميز بمحدوديته ونزوله الدرجی كسلم وليس تدهوراً مستمراً ليناً كالزهايمر، ويكون إثر تعرض الدماغ لجلطات وانسدادات وعائية متكررة."],["متلازمة الفص الجبهي تتميز بـ:",["قوة الذاكرة","ضعف الوظائف التنفيذية واللامبالاة","الحبسة التامة","العمى"],1,"الفص الجبهي يعنى بالتخطيط والتنفيذ والتحكم، إصابته تُحيل الشخص لشخص متبلد، لامبال، يفتقر للصبر والتخطيط ومنفلت الزمام والمراقبة للذات."],["فقدان الذاكرة التقدمي يعني:",["نسيان الطفولة","عدم القدرة على تكوين ذكريات جديدة","فقدان النطق","تحسن الذاكرة"],1,"Anterograde amnesia: تعني العجز التام للمخ (الحصين في الأغلب) عن صياغة أو تخزين أي ذكريات لأحداث ما بعد لحظة الإصابة المأساوية."],["متلازمة كورساكوف مرتبطة بشكل رئيسي بـ:",["إدمان الكحول وسوء التغذية","التدخين","الصدمة النفسية","الأورام"],0,"الكحولية المزمنة ونقص فيتامين ب1 (الثيامين) الشنيع يقودان لاعتلالات خطيرة في الذاكرة مع تعويضها و تلافِقَها واختلاقها بالأحداث."],["\"التلفيق\" (Confabulation) يُلاحظ أحياناً في مرضى:",["القلق","كورساكوف","الاكتئاب","الوسواس"],1,"حيث يسعى مريض الذاكرة الممتلئة بالفجوات لسد ثقوب النسيان بسرد قصص كاذبة لكن دون وعي أو قصد منه لكونه يكذب وتوهمًا أنها الأحداث الحقيقية."],["تلف الحصين يؤدي درامياً إلى:",["شلل","عجز عميق في ترسيخ وتخزين معلومات جديدة","طفرة إدراكية","عمى"],1,"الحصين (Hippocampus) هو الأرشيف والمصنع المكلف بدمج واستقرار الذاكرة والانتقال إلى الذاكرة الطويلة المدى التامة."],["الدواء الواعد المذكور لإبطاء الزهايمر هو:",["أريسبت (Aricept)","بروزاك","أسبرين","بنادول"],0,"الدواء يعنى بإبطاء سرعة التدهور الكارثي للذاكرة العصبية عن طريق تعزيز مستوى الناقل العصبي الأسيتيل كولين."],["العجز اللغوي في الزهايمر يظهر كـ:",["طلاقة فائقة","فقر في الكلام وصعوبة إيجاد الكلمات","حبسة حركية تامة","غناء"],1,"تعبيرياً يصبح المريض فقيراً، يكرر كلاماً ويصعب عليه العثور على المسمى المناسب أو المعنى المعجمي لأبسط مفردات الحياة."],["في فقدان الذاكرة العضوي، الذاكرة التي يتم الحفاظ عليها نسبياً هي:",["الحديثة","البعيدة","العاملة","قصيرة المدى"],1,"بينما يفشل المخ العضوي باكتساب ذكريات ما بعد الحادثة، فهو في العادة يحتفظ بنسبة ممتازة بذكريات طفولته العميقة ومهاراته اللفظية القديمة."],["علم النفس العصبي السريري يهتم بـ:",["تفسير الأحلام","تقييم وتأهيل مرضى تلف الدماغ","علم الاجتماع","الإرشاد المهني"],1,"يهتم بدراسة التلف القائم على العصب وتوفير حوكمة للمقاييس السريرية واكتشاف التلف الموضعي والتأهيل الإدراكي العضوي للمرضى."],["الخرف المرتبط باضطرابات الغدد الصماء أو استسقاء الرأس يعتبر:",["مميتاً فوراً","قابلاً للعلاج","وراثياً","لا علاج له"],1,"عكس الأمراض التنكسية كالزهايمر المُعدم لعلاج تدميره، خرف الغدد والهرمونات قابل للتحسن، بل والتلاشي بالتصحيح والتعديل والتدخل الجراحي أو الدوائي."],["التطور التدريجي وغير المنتظم (على شكل درجات) يميز:",["الزهايمر","الخرف الوعائي","هنتنغتون","كورساكوف"],1,"الخرف الوعائي يهبط بالمدارك العقلية مع كل جلطة أو احتشاء مفاجئ وعائي يعانيه الدماغ، ليخلق هبوطاً تدرجياً كسلاليم أو خطوات لا ميلاً ناعماً ومنحدراً كالزهايمر."],["مريض كورساكوف يتمتع غالباً بـ:",["تخلف عقلي","ذكاء متوسط ولغة طبيعية رغم فقدان الذاكرة","شلل رباعي","غيبوبة"],1,"فالخرف في كورساكوف شديد التمركز ونوعي لدرجة أنه يسحق المخزون الحدثي للذاكرة لكنه يُمكن الشخص من المحادثات والمجادلة العقلية الطيبة والتواصل اللغوي."],["فقدان السيطرة على السلوك من خلال اللغة يحدث في تلف:",["الفص القذالي","الفص الجبهي","المخيخ","النخاع"],1,"الإصابة بالجبهي تفقد العقل فرملته والوعي بعواقب كلامه وأفعاله رغم نطقه بسلاسة وطلاقة، فلا يتابع ويشرف ذاتيا على سلوكياته وضوابطه الأخلاقية."],["البنى الدماغية الأهم للذاكرة تشمل:",["القشرة الحركية","الجهاز الحوفي (كالحصين)","النخاع المستطيل","المخيخ"],1,"الجهاز الحوفي أو الـ (Limbic system) هو المفصل الرئيسي المسؤول عن استقرار الذاكرة وتخزينها، وربطها بالوجدان والبقاء والدوافع."],["تشخيص الزهايمر المؤكد والنهائي يتم من خلال:",["فحص الدم","فحص الدماغ بعد الوفاة","أشعة X","مقياس الذكاء"],1,"لا يمكن الجزم 100% بالزهايمر سريريا في الوقت الذي كان يكتب فيه الكتاب، بل يُتأكد برصد اللويحات والتشابكات بتشريح دماغ المتوفى مجهرياً."],["السكتات الدماغية المتكررة تسبب خرفاً يسمى:",["تنكسياً","وعائياً (متعدد الاحتشاءات)","شيخوخة","كورساكوف"],1,"مرتبط بتلف الوعاء الدموي (انسداد أو نزيف) مما يقطع التروية والأكسجين ويتلف مناطق دماغية محددة ووظائف حيوية كالإدراك بشكل متكرر ومفاجئ."],["المريض المتضرر دماغياً يوصف غالباً بأنه يعاني من:",["عقدة نقص","متلازمة دماغ عضوية","صراع لاشعوري","سلوك متعلم"],1,"يجمع التشخيص أعراض النسيان، والخلل المعرفي، وسوء التحكم الحركي بلفظ طبي واحد هو \"متلازمة المخ العضوي\" للتوضيح والدقة."],["في فقدان الذاكرة بالفص الصدغي، يعاني المريض من عجز في:",["السمع","ترسيخ المعلومات الجديدة","البصر","المشي"],1,"بالإضافة لاحتوائه مركز السمع، يساهم الفص الصدغي (المدفون فيه الحصين) بشدة وبحساسية جزرية في عملية الحفظ وتعلم أشياء ولغات جديدة."],["الآفات أحادية الجانب في الفص الصدغي الأيسر قد تسبب قصوراً في:",["الذاكرة المكانية","الذاكرة اللفظية","الرؤية","العواطف"],1,"لارتباط الجانب الأيسر بالاستدلال والكلام؛ وبالتالي الخلل هنا يكون نوعيًا بمهارات التذكر اللفظية والمعجمية والكلامية."],["مريض الفص الجبهي يوصف بـ:",["قوة البصيرة","نقص البصيرة وعدم القدرة على توجيه السلوك","الذاكرة الخارقة","الهلوسة"],1,"غياب التخطيط والنية يفقده القدرة الفائقة والمحددة على أداء عمل متعمّد والتنبه لأخطائه والمحافظة على سلوكيات مبرمجة معينة."],["في الخرف، التدهور التدريجي يشمل:",["الذاكرة فقط","الذاكرة وتليها القدرات المعرفية الأخرى","البصر فقط","السمع فقط"],1,"غالباً ما يبدأ بفقد التذكر والاهتمام ولكنه لزاما ما يمضي ويحصد ويركع سائر القدرات الأخرى كالكلام والتعقل والحركة والفهم المعرفي ليختتمها بشلل شامل."],["مرضى كورساكوف يمكنهم التعلم إذا:",["أعطوا تلميحات كافية ووقتاً","تم توبيخهم","منعوا من النوم","لا يمكنهم التعلم أبداً"],0,"مستويات إدراكهم وإعمالهم المعرفي باقية؛ وبتعويض عجزهم بالتلميحات الصريحة واستراتيجيات الإطالة والإعانات يثبتون قدرتهم السريرية على الاستفادة الطفيفة."],["التمييز بين العضوي والوظيفي في الطب النفسي:",["لم يعد مفيداً إطلاقاً","لا يزال مفيداً في الإدارة وتخطيط العلاج","ملغى","يعتمد على الجنس"],1,"برغم الإقرار بصعوبة الفصل والمكابدة، ومعرفة أن البيئة والنفس لها أثر بيولوجي على الدماغ، يظل المعيار العضوي حاسما لطرائق التدخل ونجاعة الجراحات والأدوية والنتائج الطبية."],["الاضطرابات العقلية العضوية ترتبط بتلف مثبت في وظائف الدماغ.",["صح","خطأ"],0,"صحيح، لأنها تنشأ كاستجابة وفشل فيسيولوجي تشريحي للمخ بسبب الأورام، والجلطات الدماغية وتلف المايلين ونقص الأكسجين في الخلايا والتهاباتها."],["يعتبر الفصام والقلق أمثلة كلاسيكية على الأمراض العضوية البحتة دون أي أساس وظيفي.",["صح","خطأ"],1,"خطأ، تعتبر تقليدياً أمراضاً وظيفية أو نفسية في الأساس، بخلاف التوثيق العضوي الجلي كزهايمر أو الرضات الجسدية المسببة للتلف والتغيير المباشر والمقطعي."],["مرض الزهايمر هو أكثر أنواع الخرف التنكسي شيوعاً.",["صح","خطأ"],0,"صحيح، ويمثل النسبة السطوة والسواد السائد والمنطقي في الغالبية العظمى لكل حالات التنكس والتدهور الخرفي والمأساوي لكبار ومسني العالم."],["الخرف الوعائي يتميز بتطور تدريجي منتظم وسلس جداً.",["صح","خطأ"],1,"خطأ، على النقيض من ذلك تماما هو يتدرج كأنماط السلالم وعلى شاكلة احتشاءات وجلطات حادة متتالية، تسحب كل منها رصيداً جديداً من مستوى المخ."],["مرض هنتنغتون يظهر عادة في سن متأخرة جداً ولا يؤثر على الحركة.",["صح","خطأ"],1,"خطأ، مرض عضوي غريب واعتلال كارثي مبكر (غالباً بعمر 40)، ويتميز بحركاته الغريبة الإجبارية الفجائية وتدهور سريع وخرف مستهلك للشباب المعرفي نسبياً."],["متلازمة الفص الجبهي تؤدي إلى ضعف في الوظائف التنفيذية واللامبالاة العاطفية.",["صح","خطأ"],0,"صحيح، لأن الفص الجبهي يُعتبر هو القبطان الأكبر والعقل المدبر التنفيذي والمسؤول الأول لمنظومة التحمس وتوجيه السلوك والأعمال."],["فقدان الذاكرة التقدمي يعني عدم القدرة على تكوين ذكريات جديدة بعد حدوث الإصابة.",["صح","خطأ"],0,"صحيح، المخ هنا يمتنع كلياً ويسقط إجرائيا في اختبار استيعاب المطبوعات الجديدة التي تقع للمريض ونسخها وضمها للوعي، فينسى أي واقعة جديدة."],["مريض كورساكوف الكحولي يعاني من ضعف شديد في الذاكرة البعيدة مع حفاظ تام على الذاكرة الحديثة.",["صح","خطأ"],1,"خطأ، هو يعاني العكس بالضط. ذاكرته للماضي باقية بعمق ومحددة، وضعفه التام ينصب حصراً على الترحيل وتسجيل الذكريات والأحداث الطارئة الجديدة."],["الخرف الناتج عن استسقاء الرأس ذي الضغط الطبيعي غير قابل للعلاج على الإطلاق.",["صح","خطأ"],1,"خطأ، يعتبر من نوادر وخواص الخرف التي يمكن وقف تدهوره واسترجاع وظائفه جزئيا أو كلياً بضبط السوائل، والتدخل الجراحي الفوري واستراتيجيات الأطباء السريرية."],["تلف الحصين في الجهاز الحوفي يؤدي إلى عجز كبير في ترسيخ الذكريات الجديدة.",["صح","خطأ"],0,"صحيح، فالحصين هو الأرشيف وصانع المطبوعات العصبية الناقلة للماضي الجديد، وعطله يؤكد العجز المباشر لفقر الذاكرة المستحدثة."],["مريض الفص الجبهي قد يفقد القدرة على التحكم في سلوكه رغم سلامة اللغة والتحدث بطلاقة.",["صح","خطأ"],0,"صحيح، الفص لا يعتني بتوليد ومعاجم النطق بل بالإرادة والتفكير وتحديد التوجه، وبالتالي نجد المريض يتفوه ويشتم بسهولة ولكن بلا فرامل أو ضوابط إشرافية وسياقية."],["التلفيق (اختلاق الأحداث لملء الفراغات) كان يعتبر عرضاً رئيسياً لمتلازمة كورساكوف.",["صح","خطأ"],0,"صحيح، حيث تُملأ الفجوة الخفية للتذكر باختراعات كقصة وحكاية غريبة غير مقصودة، تخدع حتى صاحبها ظنا منه بصدق الموقف."],["الدماغ المتضرر لا يمكن أن يستعيد أي وظيفة مطلقاً ولا يوجد أي أمل في إعادة التأهيل.",["صح","خطأ"],1,"خطأ، بسبب مرونة الدماغ ووجود إمكانيات تعويضية وطرق جديدة، يُمكن إعادة هيكلة جزء مهم والتأقلم الوظيفي بالتأهيل الشاق وإجراءات العلاج المتعددة."],["صعوبة إيجاد الكلمات وفقر الكلام من الأعراض اللغوية البارزة لمرض الزهايمر المتقدم.",["صح","خطأ"],0,"صحيح، فكلما تجذر التدهور وانحدر، كلما شملت الأضرار قدرات فك التشفير والتنضيد والمفردات المعجمية، ليتقزم المحصول والنتاج والحصيلة الجوهرية للكلام ومهارته."],["الذاكرة البعيدة (القديمة) تتأثر قبل الذاكرة الحديثة في معظم اضطرابات فقدان الذاكرة.",["صح","خطأ"],1,"خطأ، الذاكرة البعيدة تكون صامدة ومحفورة وعميقة لزمن كبر، بينما تسقط أشكال الذاكرة المستحدثة والطارئة والسريعة واليومية في فخ الخرف والمحي."],["الخرف هو تدهور بطيء وتدريجي للوظائف العقلية يبدأ غالباً بمشاكل في الذاكرة.",["صح","خطأ"],0,"صحيح، الانحراف والقصور في معالجة الحدث الفوري هو الناقوس المألوف والأول الذي يسترعي ملاحظات المحيطين والطب النفسي لتشكيك في حالة المريض."],["علم النفس العصبي يهتم بتقييم وتأهيل مرضى الدماغ بناءً على العلاقة بين الدماغ والسلوك.",["صح","خطأ"],0,"صحيح، فهو التقاطع العميق الذي يقرن وينظم وينسق تأثير مكان وحجم الإصابة المخية بنوع ومقدار الملاحظات في التصرف والتفكير والانفعال المعرفي التكيفي المتبقي للمريض."],["لا توجد أي علاقة بين إدمان الكحول المتكرر والإصابة بمتلازمة كورساكوف أو الخرف.",["صح","خطأ"],1,"خطأ، الإدمان المستمر ونقص الثيامين المترافق هو المسبب القطعي والمباشر والأساسي لمتلازمة الخرف وفقدان الذاكرة الكورساكوفي، وضمور وتشوه الخلية العصبية."],["يمكن رؤية مرض الزهايمر وتشخيصه بدقة 100% عبر فحص الدم أثناء حياة المريض.",["صح","خطأ"],1,"خطأ، الجزم الصارم والموثق بالمائة لا يتحقق في الغالب إلا بتشريح أنسجة ومقاطع المخ والعثور على اللويحات الداء بعد مفارقته للحياة."],["نقص البصيرة وعدم القدرة على إنتاج سلوك موجه نحو هدف معين يميز تلف الفص الجبهي.",["صح","خطأ"],0,"صحيح، البصيرة والرؤية الاستباقية الموجهة وتفادي العواقب وحصد الهدف المنظم هي وظيفة جبهية تنظيمية تنفيذية عالية المستوى يسقطها وبشدة الضرر البالغ للفص المذكور."]]},{"title":"الفصل السابع: متلازمة اضطراب الدماغ العضوي وانتشار الاضطرابات","capsule":"تُركز المادة هنا على تفريعات الصرع العضوي (الأكبر والأصغر وبؤرة الفص الصدغي)، ودوره في تغييرات الوعي والمزاج. مع لمحة تفصيلية عن تخطيط الدماغ الكهربائي (EEG)، وبيانات انتشار الاضطرابات العقلية الخطيرة كالقلق والاكتئاب بحسب الجنس والعمر.","questions":[["رمز OBS يشير إلى:",["متلازمة الدماغ العضوية","اضطراب الهلع","الوسواس","التوحد"],0,"يُستخدم كاختصار للإشارة للقصور الوظيفي الحاصل نتيجة خلل فيسيولوجي دماغي (Organic Brain Syndrome)."],["مقياس غلاسكو للغيبوبة (GCS) يتراوح تدريجه بين:",["1 إلى 10","3 إلى 15","0 إلى 100","10 إلى 50"],1,"هو أداة لتقييم الوعي من 3 (انعدام استجابة وغيبوبة عميقة) إلى 15 (إدراك تام ووعي كامل) بناءً للعين والحركة واللفظ."],["الدرجة في مقياس GCS التي تشير لإصابة دماغية \"شديدة\":",["13-15","9-12","3-8","15-20"],2,"تُعد درجات 8 فأقل مؤشراً لإصابة رضية بالغة وخطيرة وسبباً لتدخل وفقدان وعي يتجاوز مرحلة الهدوء البسيطة."],["نوبة الصرع الكبرى (Grand Mal) تتميز بـ:",["وعي كامل","فقدان الوعي وحركات ارتعاشية","عمى","فقدان سمع"],1,"تمثل الذروة التشنجية الكلاسيكية، وتمر بمرحلة تصلب ثم ارتعاشات متعاقبة مع غياب وانطفاء كلي للوعي."],["النوبة الصغرى (Petit Mal) تستمر عادة:",["ساعة","20-30 ثانية","يوم كامل","دقيقة واحدة"],1,"هي فقدان خاطف وسريع جداً للوعي (ثواني معدودة) وغالباً ما لا يرافقه سقوط وتتسم بالتحديق الشارد."],["نوبات \"جاكسون\" تعتبر من نوبات الصرع:",["المعممة","البؤرية (الموضعية)","النفسية","الهستيرية"],1,"تبدأ في منطقة محددة من القشرة (كتنمل باليد) ثم تنتشر على نسق تدريجي زاحف وتندرج تحت الصرع البؤري."],["الإحساس بالروائح الكريهة أو (الديجا فو) يميز:",["نوبات الفص الصدغي","نوبات جاكسون","الصرع الأصغر","الغيبوبة"],0,"لأن الفص الصدغي يحوي معالجات حيوية للروائح والذكريات، فالصرع فيه يسبب هلوسة شمّية ووهماً بسبق الرؤية."],["الأداة الأساسية والأهم لتشخيص مرض الصرع هي:",["MRI","EEG (تخطيط الدماغ الكهربائي)","CT scan","X-ray"],1,"يظل رسم الموجات الدماغية الأداة الذهبية لرصد وقياس الخلل والنشاط الكهربائي الكامن والطفري المسبب للصرع في العصب العقل."],["متلازمة ما بعد الارتجاج (PCS) تتميز بـ:",["قوة الذاكرة","ضعف التركيز والانتباه والذاكرة","طفرة لغوية","قوة بصرية"],1,"الرجة القوية للمخ حتى بلا فقدان للوعي الطويل تخلف معاناه وضعف تركيز وصداعات ومزاجية قلقة لفترة ممتدة، وهي أعراض سريرية للمتلازمة."],["لتكثيف الشذوذ في تخطيط الدماغ (EEG)، يُستخدم أحياناً:",["فرط التنفس أو وميض الضوء","الهدوء التام","التخدير الموضعي","إغلاق العين"],0,"المحفزات الجسدية والبصرية السريعة تحفز العصب على إخراج وتجلية الخلل الكامن الذي قد لا يظهر وقت الهدوء، ليتم تسجيل النوبة ورصد مركزها بدقة."],["نسبة البالغين المصابين بمرض عقلي (AMI) عام 2022 في أمريكا:",["%5","%23.1","%50","%80"],1,"تشير الإحصاءات لاقتراب النسبة من الربع، أي أن ما يقارب 59 مليون من كل بالغين المجتمع يعانون من خلل عقلي بصورة أو بأخرى مما يعكس فداحة الأثر."],["نسبة انتشار الأمراض العقلية تكون أعلى لدى:",["الذكور","الإناث","متساوية","الأطفال فقط"],1,"تكتسح الإناث ذروة الخلل المرضي (أكبر من الذكور) وهذا راجع لعومل التعرض وشدته كآثار القلق والاكتئابات المستمرة والفجوات الاجتماعية في التعرض للتكديس والمشاعر."],["الاضطراب الذي يتميز بتقلبات مزاجية بين الهوس والاكتئاب هو:",["القلق","ثنائي القطب","الفصام","PTSD"],1,"يتميز اضطراب Bipolar بتشخيصات تتمرجح من الهوس الشديد كحزم طاقة مفرطة والتصرف اللامبالاتى لنهوها في الاكتئاب الساحق المدمي المزاجي."],["تجنب الأفكار والأنشطة المرتبطة بحدث صادم أو مرعب يميز اضطراب:",["الاكتئاب","ما بعد الصدمة (PTSD)","الفصام","التوحد"],1,"يعانى المريض باحتداد تجنب أى عامل قد يمت لتجربة الموت أو الرعب أو التعارك المكتئب التى كان فيها متفرج أو ضحيتها ورافقه في العقل اللاشعوري والشعوري."],["فقدان الذاكرة بعد نوبة الصرع الكبرى يشمل:",["فترة النوبة نفسها (أثناء فقدان الوعي)","الطفولة","اللغات الأجنبية","الأسماء فقط"],0,"لا يمكن تشفير واستبقاء معلومات أثناء حالة غيبوية النوبة الكبرى والغياب الصرعى للموجات القشرية ولذا يختفى الوعى وقتها ولا يسترد أبداً."],["الحركات التلقائية النمطية (كالبلع أو المضغ اللاإرادي دون وعي) ترتبط بصرع الفص:",["الجداري","الصدغي","الجبهي","القذالي"],1,"يرتبط بحركات الفص الصدغي وأعراض كأحلام اليقظة كأنها نوبة آلية دون نطق."],["في نوبات الفص الصدغي، قد يعاني المريض من:",["تغيرات عاطفية غير مبررة كالرعب","شلل نصفي","عمى دائم","توقف القلب"],0,"الفص الصدغي متصل بالجهاز الحوفي وينظم الانفعالات الوجدانية العميقة كالرعب والهوس بلا مبرر ظاهر."],["الهدف من إعادة التأهيل المعرفي (لإصابات الدماغ) هو:",["الجراحة","تعليم استراتيجيات تعويضية لزيادة الأداء","التخدير","العقاب"],1,"يتم بالتدريب وتكريس الالتفاف المعرفي والتعويضي ومهارات التأقلم للحصول على أداء وظيفى ونجاح مجتمعى وشخصي تعويضا عما تلف للمصاب."],["السلوك التخريبي والعناد يميز اضطرابات:",["الفصام","السلوك التخريبي والعناد المعارض","القلق","الإدمان"],1,"هي فئات استرشادية واضحة متميزة عن فرط الحركة بتمحور تركيزها على الحقد أو العناد وتأزيم السلطة المرجعية والمدارسية باستمرار."],["من اضطرابات النمو العصبي:",["الزهايمر","نقص الانتباه وفرط النشاط (ADHD) والتوحد","كورساكوف","PTSD"],1,"هي مشكلات أساسية تكتشف وتنمو وتتصدر أطوار وتشعبات نمو ومزاج الطفولة كالوسواس وحركات البنية الوظيفية للدماغ والتواصل."],["\"الهالة\" التحذيرية التي يشعر بها المريض تسبق عادة:",["النوبة الصغرى","نوبة الصرع الكبرى","القلق","الاكتئاب"],1,"تعتبر (Aura) بمثابة التنبؤ والإحساس الشمي أو الفكرى أو البدني بأن الزلزال آت فيعمد المأزوم لتهيئة نفسه للتشظيات القادمة."],["تشكل النوبات البؤرية التي تتحول إلى معممة خطراً بسبب:",["فقدان الوعي والسقوط المفاجئ","الذكاء","طول القامة","لا يوجد خطر"],0,"هذا هو محدد الرعب والخلل حين يغدو الجسم منشلًا وكأنه ميت ويسقط على أي جسم مدبب أو سياقة سيارات."],["في نوبات الصرع الصغرى، قد يُلاحظ الأهل على الطفل:",["العنف","التحديق المتكرر أو النظرة الشاردة","النشاط المفرط","الصداع"],1,"فقط سيتجمد لثوان شارد كالأبله وهذا يخطأ به التربويون ويعتبرونه إهمالا وتشتتا وليس مرضا مكهربا بالدماغ."],["العلاج النفسي الموجه نحو الاستبصار يكون:",["فعالاً جداً","غير فعال لمريض يعاني من ضعف استبصار عضوي","خطيراً","علاجاً نهائياً"],1,"الخلل العضوي والجبهي يسلب المريض بصيرته وتفهمه لعلته فكأنك تحرث بالماء إن طالبته بالبصيرة الذاتية النفسية للحل."],["في الفصام، نسبة التوريث تقدر بـ:",["%10","%60 إلى %80","%0","%100"],1,"يرث الخلل جيناته العالية والمتضاعفة عبر أقاربة ذوي الدرجة الأولى ولكن دون تأثير قطعي بلا شريك وضغط خارجي دافع."],["الاكتئاب يساهم بـ:",["عبء قليل","السبب الرئيسي لسنوات الحياة المعدلة حسب الإعاقة","لا يسبب إعاقة","يشفى تلقائياً"],1,"تصدر القائمة السوداء كمعيق وقاهر يزاحم البشر ويعيق سنوات الرفاه والإنتاج السعيد كعجز مرضي جسيم."],["اضطراب الأكل (مثل فقدان الشهية العصبي) يبدأ غالباً في:",["الشيخوخة","المراهقة أو بداية البلوغ","الطفولة المبكرة","منتصف العمر"],1,"تتفاقم التغيرات الهرمونية ومراقبة الشكل الضاغط بالرفقة والانتقاد لتفجر الهوس القاتل بالجسد وأكله في مطالع المراهقة الساحرة."],["برنامج رأب الفجوة للصحة النفسية (mhGAP) تابع لـ:",["APA","منظمة الصحة العالمية (WHO)","اليونيسيف","FDA"],1,"أبرز مشاريع ومساعي المنظمة لوضع الإدلاء والتنقيحات والتدريب الفوري للأطباء بالرعاية الأولية لتدارك النقص وتعميم الثقافة والدعم."],["التمييز بين الهستيريا التحويلية والصرع مهم، فالهستيريا تتميز بـ:",["شحنات كهربائية شاذة","غياب الشذوذ في EEG وارتباطها بصراعات","سقوط عنيف","لا تميز"],1,"الهستيريا مرض عصابي يمثل مسرحية حركية لا إرادية هروبا من صراع نفسي دون خلل بيولوجي بتخطيط الدماغ."],["في الصرع مجهول السبب، يُلاحظ أن نسبة الإصابة في عائلات المرضى:",["أقل","تزيد 5 أضعاف عن عامة السكان","متساوية","معدومة"],1,"يؤكد دور الجينات، فالعائلة تمتلك الاستعداد الكهربائي المتهور المتأصل والمقاس احصائيا بـ 5 أضعاف العائلات الأخرى الخالية."],["متلازمة الدماغ العضوية (OBS) تنطوي على اختلالات معرفية وسلوكية بسبب إصابة الجماغ.",["صح","خطأ"],0,"نعم، هو مصطلح عام لوصف القصور الوظيفي الناتج عن مرض عضوي مباشر كجلطة أو تلف دماغي."],["التقييم بمقياس غلاسكو (GCS) من 13 إلى 15 يشير إلى إصابة دماغية شديدة الخطورة.",["صح","خطأ"],1,"خطأ، تعتبر الدرجة العالية مؤشرا لإصابة الدماغ بضرر (خفيف)، وكلما خفضت الدرجة عن 8 كان الضرر (شديد)."],["نوبة الصرع الكبرى تترافق مع تصلب عضلي وامتداد كامل للجسم تليها حركات ارتعاشية.",["صح","خطأ"],0,"نعم، هذا وصف طورين متتابعين؛ أحدهم مقوي والثاني رمعي (ارتعاشي) بتمزيم تام لفقد الوعي المتزامن."],["النوبة الصغرى للصرع يصاحبها تشنجات عنيفة وفقدان تحكم في الإخراج.",["صح","خطأ"],1,"خطأ، النوبة الصغرى تتميز بتجمد بسيط ونظرة فارغة وتستكمل في ثوان معدودة بلا تعقيدات إخراج أو ارتعاش مقيت."],["نوبات جاكسون تعتبر من النوبات البؤرية التي ترتبط بخلل موضعي في منطقة محددة.",["صح","خطأ"],0,"نعم، ومتميزة بنمطها الزاحف والمنبعث الموضعي المنتشر شيئاً فشيء بجهات متجاورة من الأطراف كالمد البطيء المنتشر."],["\"التفكير القسري\" حيث تقتحم فكرة وعي المريض يعتبر من الظواهر النفسية لصرع الفص الصدغي.",["صح","خطأ"],0,"صحيح، لأنها نوبات إدراكية وليست بضرورة حركية تتشح بلمحات وجُمل وفروض مجحفة مقتحمة لإدراك المريض عنوة بفكره وتخبطه."],["تخطيط الدماغ الكهربائي (EEG) الطبيعي بين النوبات ينفي تماماً وبشكل قاطع مرض الصرع.",["صح","خطأ"],1,"خطأ، المريض المصروع يقضي غالب وقته باعتدال وشذوذه يسطع بالنوبة، وحتى بالنوبة الكبرى العظمى لا تسجل أحيانا الشاذة بالمقاطع الكامنة المحدودة."],["يعتبر النوم أو فرط التنفس من المحفزات التي تستخدم لتكثيف النشاط غير الطبيعي في جهاز EEG.",["صح","خطأ"],0,"نعم، لإجهاد القشرة وإتاحة الخلل المكبوت والجبان لإبراز تشوهة وذبذباته لغرض كشف المخبأ للتشخيص وتسهيل علاجه السريري وموقعه البؤرى الدقيق."],["متلازمة ما بعد الارتجاج تظهر واضحة دائماً في التصوير المقطعي للدماغ ولا تحتاج لاختبارات نفسية.",["صح","خطأ"],1,"خطأ، فـ (PCS) تنطوي على تلف دقيق على مستوى المحاور لا تُجس أو ترصد بوضوح عبر الأشعات ولابد من القياس السريري الوصفي المقنن الدقيق لإثبات الوهن والاستبيان العصبي."],["التأهيل المعرفي لمرضى التلف الدماغي يهدف لتعليم استراتيجيات تعويضية لزيادة الأداء الوظيفي.",["صح","خطأ"],0,"صحيح، فالتلف التام في أنسجة المخ يستدعي إيجاد ممرات وطرق للتقوية، وتحفيز سبل التفافية مستحدثة للموازنة ورفع القصور الباقى والوظيفية لحياة شبه مستقلة ومقنعة."],["معدل الإصابة بالأمراض العقلية الخطيرة (SMI) أعلى بين الذكور مقارنة بالإناث.",["صح","خطأ"],1,"خطأ، الإحصاءات والأرقام المعتمدة تدل أن الإناث هن الأكثر إبلاغا وحدوثا لتلك الاعتلالات كالاكتئاب أو القلق الشديد المستنفذ."],["اضطراب الكرب التالي للصدمة يتميز بتجنب مستمر للأفكار والأماكن المرتبطة بالحدث الصادم.",["صح","خطأ"],0,"صحيح، العقل يقرر الإجهاض ومنع الاقتراب حتى خياليا من ملامح المأساة كآلية دفاعية بائسة تقهر اندماجه ورفاهه المعرفي."],["التوحد واضطراب فرط الحركة ونقص الانتباه يصنفان ضمن فئة اضطرابات النمو العصبي.",["صح","خطأ"],0,"نعم، لكونهما يظهران ويبزغان إثر تطور وضمور، وتمثيل وتشابك، للمراحل المبكرة للجهاز المحوري والنفسي ليتحد أثره ويتجلى سلوكيا ومدركيا منذ الصغر."],["الغالبية العظمى (%90) من خدمات الصحة النفسية عالمياً يقدمها أطباء نفسيون متخصصون جداً.",["صح","خطأ"],1,"خطأ، بسبب الندرة والفجوة والتكاليف، معظم التدخل والأدوية والمساندة تُقر وتعزز بجهد الممارسين والممرضات وأطباء الرعاية الأولية (أطباء العائلة والأسرة)."],["برنامج mhGAP يهدف لسد فجوة الرعاية النفسية من خلال تدريب العاملين في الرعاية الأولية.",["صح","خطأ"],0,"صحيح، صمم البرنامج (التابع لمنظمة الصحة العالمية) لبناء شبكة صامدة وأدلة إرشادية وتدريبات لتهيئة أطقم الرعاية العامة للتعامل الأمثل وتخفيف الطوق وتعميم الثقافة والنقد والعلاج المبكر."],["الهالة (Aura) تعتبر إحساساً تحذيرياً قصيراً يسبق العديد من نوبات الصرع الكبرى.",["صح","خطأ"],0,"صحيح، وتتجلى כرائحة عجيبة أو خفقان، وتمثل الإنذار الكهربي وتسمح للمريض بتهيئة نفسه أو درء أذيات الحادث المتزامنة."],["الهستيريا التحويلية والتظاهر بالمرض يمكن تمييزهما عن الصرع بواسطة تخطيط الدماغ (EEG).",["صح","خطأ"],0,"صحيح، فالهيستيريا تفتقد للسند والتوهج الكهربي الشاذ والفجائي الملحوظ في جهاز التخطيط لكونها نفسية، فتطابق التخطيطات مع السوية."],["نوبات الفص الصدغي قد يصاحبها سلوك معقد وموجه ينفذ دون وعي المريض التام (سلوكيات تلقائية).",["صح","خطأ"],0,"صحيح، فقد يقوم المريض، وبكل طلاقة، بالعزف أو الشرب أو القيام بفروض ولكن ليس بوعيه الذاتي المعزز ولن يمتلك ذاكرة عن فعلته بعد الإيفاق."],["الحرمان الاجتماعي والاقتصادي يعتبراً من العوامل التي تقلل من نسب الاضطرابات النفسية.",["صح","خطأ"],1,"خطأ، هي عوامل تضاعف، وتشكل طعنة قاهرة لرفاهية الإنسان وتقوضه وتجني به لدرك الهوسات والاكتئاب بفضل الضغط واليأس والتخلف السطوي والاجتماعي."],["العلاج النفسي التأهيلي في الإصابات العضوية يركز على إعادة المريض للأداء الطبيعي قدر الإمكان رغم الإعاقة.",["صح","خطأ"],0,"صحيح، يغرس الاستراتيجيات التعويضية والإحاطة والإرشاد وتجاوز الفقد العصبي التالف عبر ممارسة مرنة وبناء استقلالية واقعية وحيوية وفعالة للمصاب تيسر وتتقاطر مع ما لديه."]]}];
+
+        function App() {
+            const [view, setView] = useState('intro'); // 'intro', 'chapters', 'capsule', 'quiz', 'result'
+            const [selectedChapter, setSelectedChapter] = useState(null);
+            const [questionIndex, setQuestionIndex] = useState(0);
+            const [score, setScore] = useState(0);
+            const [modal, setModal] = useState({ show: false, isCorrect: false, text: '', emoji: '', explanation: '', correctAnswer: '' });
+
+            const startJourney = () => setView('chapters');
+            
+            const startChapter = (chapterIndex) => {
+                setSelectedChapter(chapterIndex);
+                setView('capsule');
+            };
+
+            const startQuiz = () => {
+                setQuestionIndex(0);
+                setScore(0);
+                setView('quiz');
+            };
+
+            const handleAnswer = (selectedIndex) => {
+                const chapter = chaptersData[selectedChapter];
+                const question = chapter.questions[questionIndex];
+                const isCorrect = selectedIndex === question[2];
                 
-                setModalState({ show: true, isCorrect, selectedOption: index });
+                if (isCorrect) setScore(s => s + 1);
+
+                const getPhrases = isCorrect ? correctPhrases : incorrectPhrases;
+                const getEmojis = isCorrect ? correctEmojis : incorrectEmojis;
+                
+                setModal({
+                    show: true,
+                    isCorrect,
+                    text: getPhrases[Math.floor(Math.random() * getPhrases.length)],
+                    emoji: getEmojis[Math.floor(Math.random() * getEmojis.length)],
+                    explanation: question[3],
+                    correctAnswer: question[1][question[2]]
+                });
             };
 
             const handleNextQuestion = () => {
-                setModalState({ show: false, isCorrect: false, selectedOption: null });
-                if (currentQIndex + 1 < questionsData.length) {
-                    setCurrentQIndex(prev => prev + 1);
+                setModal({ ...modal, show: false });
+                if (questionIndex + 1 < chaptersData[selectedChapter].questions.length) {
+                    setQuestionIndex(i => i + 1);
                 } else {
-                    setQuizFinished(true);
+                    setView('result');
                 }
             };
 
-            const getRandomMeme = (isCorrect) => {
-                const arr = isCorrect ? correctPhrases : wrongPhrases;
-                return arr[Math.floor(Math.random() * arr.length)];
-            };
-
-            if (quizFinished) {
-                const percentage = Math.round((score / questionsData.length) * 100);
-                return (
-                    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 animate-slide-up">
-                        <div className="bg-white p-10 rounded-3xl shadow-2xl text-center max-w-lg w-full">
-                            <div className="text-8xl mb-6 animate-bounce-in">{percentage >= 50 ? '🏆' : '📚'}</div>
-                            <h2 className="text-3xl font-bold text-indigo-900 mb-2">انتهى الاختبار!</h2>
-                            <p className="text-xl text-gray-600 mb-6">لقد أجبت بشكل صحيح على <span className="font-bold text-indigo-600">{score}</span> من أصل <span className="font-bold">{questionsData.length}</span> سؤال.</p>
-                            
-                            <div className="w-full bg-gray-200 rounded-full h-4 mb-8">
-                                <div className={`h-4 rounded-full ${percentage >= 50 ? 'bg-green-500' : 'bg-red-500'}`} style={{ width: `${percentage}%` }}></div>
+            return (
+                <div className="max-w-4xl mx-auto px-4 pt-10 pb-20">
+                    {view === 'intro' && (
+                        <div className="flex flex-col items-center justify-center min-h-[80vh] text-center animate-fade-in">
+                            <div className="w-32 h-32 md:w-48 md:h-48 mb-8 relative rounded-full overflow-hidden shadow-2xl animate-bounce-slow bg-white flex items-center justify-center border-4 border-indigo-500">
+                                <div id="logo-fallback" className="hidden absolute inset-0 flex items-center justify-center bg-indigo-50">
+                                    <FallbackLogo />
+                                </div>
+                                <img src="logo.jpg" alt="Logo" className="w-full h-full object-cover relative z-10" onError={(e) => { e.target.style.display='none'; document.getElementById('logo-fallback').classList.remove('hidden'); }} />
                             </div>
-                            
-                            <button 
-                                onClick={() => window.location.reload()}
-                                className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-full hover:scale-105 transition-transform shadow-lg"
-                            >
-                                إعادة الاختبار 🔄
+                            <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 mb-6 leading-tight animate-slide-up">
+                                منصة موضوعات اكلنيكية <br/>باللغة الانجليزية
+                            </h1>
+                            <p className="text-xl text-gray-600 mb-10 max-w-2xl animate-slide-up" style={{animationDelay: '0.2s'}}>
+                                منصتك التدريبية المتكاملة لاحتراف مفاهيم علم النفس الإكلينيكي والاستعداد للاختبارات بثقة ومتعة.
+                            </p>
+                            <button onClick={startJourney} className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-indigo-600 border border-transparent rounded-full hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 card-shadow hover:scale-105 animate-slide-up" style={{animationDelay: '0.4s'}}>
+                                <PlayIcon /> 
+                                ابدأ رحلتك الآن
                             </button>
                         </div>
-                    </div>
-                );
-            }
+                    )}
 
-            return (
-                <div className="max-w-3xl mx-auto p-4 py-8 relative">
-                    {/* Progress */}
-                    <div className="mb-6 flex justify-between items-center text-sm md:text-base font-semibold text-gray-600">
-                        <span>السؤال {currentQIndex + 1} من {questionsData.length}</span>
-                        <span className="bg-indigo-100 text-indigo-800 py-1 px-3 rounded-full">النقاط: {score}</span>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden animate-slide-up">
-                        <div className="bg-indigo-600 p-6 text-white min-h-[120px] flex items-center justify-center text-center shadow-inner">
-                            <h2 className="text-xl md:text-2xl font-bold leading-relaxed">{question.question}</h2>
-                        </div>
-                        <div className="p-4 md:p-8 space-y-4 bg-gray-50">
-                            {question.options.map((opt, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => handleOptionClick(idx)}
-                                    disabled={modalState.show}
-                                    className={`w-full text-right p-4 rounded-xl border-2 font-semibold text-gray-700 transition-all duration-200 hover:bg-indigo-50 hover:border-indigo-400 hover:-translate-y-1 hover:shadow-md focus:outline-none
-                                        ${modalState.show && idx === question.correct ? 'bg-green-100 border-green-500 text-green-900' : ''}
-                                        ${modalState.show && idx === modalState.selectedOption && !modalState.isCorrect ? 'bg-red-100 border-red-500 text-red-900' : ''}
-                                        ${!modalState.show ? 'bg-white border-gray-200' : 'opacity-80'}
-                                    `}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <span>{opt}</span>
-                                        <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center text-transparent">
-                                            ✓
+                    {view === 'chapters' && (
+                        <div className="animate-fade-in">
+                            <h2 className="text-3xl font-bold text-dark mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">اختر الفصل الدراسي</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {chaptersData.map((chap, idx) => (
+                                    <div key={idx} onClick={() => startChapter(idx)} className="bg-white rounded-2xl p-6 cursor-pointer transform transition duration-300 hover:-translate-y-2 card-shadow border border-gray-100 hover:border-indigo-300 group">
+                                        <div className="w-12 h-12 rounded-full gradient-bg flex items-center justify-center text-white font-bold text-xl mb-4 group-hover:scale-110 transition-transform">
+                                            {idx + 1}
                                         </div>
+                                        <h3 className="text-xl font-bold text-gray-800 mb-2">{chap.title}</h3>
+                                        <p className="text-indigo-600 text-sm font-semibold flex items-center">
+                                            {chap.questions.length} سؤال <ArrowLeftIcon />
+                                        </p>
                                     </div>
-                                </button>
-                            ))}
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* Feedback Modal */}
-                    {modalState.show && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 backdrop-blur-sm animate-fade-in">
-                            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up border-t-8 border-t-indigo-600">
-                                <div className="p-8 text-center">
-                                    {(() => {
-                                        const meme = getRandomMeme(modalState.isCorrect);
-                                        return (
-                                            <>
-                                                <div className="text-7xl mb-4 animate-bounce-in drop-shadow-xl">{meme.emoji}</div>
-                                                <h3 className={`text-2xl font-black mb-6 ${modalState.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-                                                    {meme.text}
-                                                </h3>
-                                            </>
-                                        );
-                                    })()}
+                    {view === 'capsule' && (
+                        <div className="animate-pop-in bg-white rounded-3xl p-8 card-shadow border-t-4 border-indigo-500">
+                            <h2 className="text-3xl font-bold text-dark mb-6 text-center border-b pb-4 shrink-0">💊 كبسولة الفصل: {chaptersData[selectedChapter].title}</h2>
+                            <div className="prose lg:prose-xl max-w-none text-gray-700 leading-relaxed mb-8">
+                                <p>{chaptersData[selectedChapter].capsule}</p>
+                            </div>
+                            <div className="flex justify-center gap-4">
+                                <button onClick={() => setView('chapters')} className="px-6 py-3 rounded-full text-indigo-600 border-2 border-indigo-600 font-bold hover:bg-indigo-50 transition">
+                                    عودة
+                                </button>
+                                <button onClick={startQuiz} className="px-8 py-3 rounded-full text-white gradient-bg font-bold shadow-lg hover:scale-105 transition">
+                                    ابدأ الاختبار
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {view === 'quiz' && (
+                        <div className="animate-fade-in relative max-w-3xl mx-auto">
+                            <div className="mb-6 flex justify-between items-center bg-white p-4 rounded-2xl card-shadow">
+                                <span className="font-bold text-indigo-600 text-lg">السؤال {questionIndex + 1} من {chaptersData[selectedChapter].questions.length}</span>
+                                <span className="text-lg font-bold text-purple-600 bg-purple-100 px-4 py-1 rounded-full">النقاط: {score}</span>
+                            </div>
+
+                            <div className="bg-white rounded-3xl p-6 md:p-10 card-shadow border border-gray-100 mb-6">
+                                <h3 className="text-2xl font-bold text-gray-800 mb-8 leading-tight">
+                                    {chaptersData[selectedChapter].questions[questionIndex][0]}
+                                </h3>
+                                
+                                <div className="space-y-4">
+                                    {chaptersData[selectedChapter].questions[questionIndex][1].map((option, oIdx) => (
+                                        <button 
+                                            key={oIdx} 
+                                            onClick={() => handleAnswer(oIdx)}
+                                            className="w-full text-right p-4 rounded-xl border-2 border-gray-100 hover:border-indigo-500 hover:bg-indigo-50 font-medium text-lg text-gray-700 transition duration-200"
+                                        >
+                                            <span className="inline-block w-8 h-8 rounded-full bg-gray-200 text-center leading-8 ml-3 text-gray-600">{String.fromCharCode(0x0623 + oIdx)}</span>
+                                            {option}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {view === 'result' && (
+                        <div className="animate-pop-in bg-white rounded-3xl p-10 card-shadow text-center">
+                            <div className="text-6xl mb-6">🏆</div>
+                            <h2 className="text-4xl font-bold text-transparent bg-clip-text gradient-bg mb-4">اكتمل الاختبار!</h2>
+                            <p className="text-2xl font-bold text-gray-700 mb-8">
+                                نتيجتك: <span className="text-4xl text-indigo-600 mx-2">{score}</span> من <span className="text-2xl">{chaptersData[selectedChapter].questions.length}</span>
+                            </p>
+                            <button onClick={startJourney} className="px-8 py-4 rounded-full text-white gradient-bg font-bold text-xl shadow-lg hover:scale-105 transition">
+                                العودة للقائمة الرئيسية
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Modal */}
+                    {modal.show && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-70 animate-fade-in backdrop-blur-sm">
+                            <div className={`bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl relative animate-pop-in overflow-hidden ${modal.isCorrect ? 'border-4 border-green-400' : 'border-4 border-red-400'}`}>
+                                <div className="text-center">
+                                    <div className="text-8xl mb-4 animate-bounce-slow">{modal.emoji}</div>
+                                    <h3 className={`text-3xl font-bold mb-2 ${modal.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                                        {modal.isCorrect ? 'إجابة صحيحة!' : 'إجابة خاطئة!'}
+                                    </h3>
+                                    <p className="text-xl font-bold text-gray-800 mb-6">"{modal.text}"</p>
                                     
-                                    {!modalState.isCorrect && (
-                                        <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm">
-                                            <span className="font-bold block mb-1">الإجابة الصحيحة:</span>
-                                            {question.options[question.correct]}
+                                    {!modal.isCorrect && (
+                                        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 text-right">
+                                            <p className="text-green-800 font-bold mb-1">الإجابة الصحيحة هي:</p>
+                                            <p className="text-green-900 text-lg flex items-center"><CheckIcon /> {modal.correctAnswer}</p>
                                         </div>
                                     )}
 
-                                    <div className="bg-indigo-50 text-indigo-900 p-4 rounded-xl text-right text-sm leading-relaxed border border-indigo-100 shadow-inner mb-6">
-                                        <strong className="block mb-2 text-indigo-700">التعليل:</strong>
-                                        {question.explanation}
+                                    <div className="bg-indigo-50 border-r-4 border-indigo-500 rounded-l-xl p-5 mb-8 text-right">
+                                        <h4 className="font-bold text-indigo-800 mb-2 flex items-center">
+                                            <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                                            التعليل من المذكرة:
+                                        </h4>
+                                        <p className="text-indigo-900 leading-relaxed text-lg">{modal.explanation}</p>
                                     </div>
 
-                                    <button 
-                                        onClick={handleNextQuestion}
-                                        className="w-full py-4 bg-gradient-to-r from-gray-800 to-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition-colors shadow-lg text-lg"
-                                    >
+                                    <button onClick={handleNextQuestion} className="w-full px-6 py-4 rounded-full text-white gradient-bg font-bold text-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
                                         السؤال التالي
                                     </button>
                                 </div>
@@ -393,28 +312,24 @@
                     )}
                 </div>
             );
-        };
+        }
 
-        // Main App Component
-        const App = () => {
-            const [stage, setStage] = React.useState('intro'); // intro, capsule, quiz
-
-            return (
-                <div className="min-h-screen flex flex-col">
-                    <Header />
-                    <div className="flex-grow">
-                        {stage === 'intro' && <IntroScreen onStart={() => setStage('capsule')} />}
-                        {stage === 'capsule' && <CapsuleScreen onProceed={() => setStage('quiz')} />}
-                        {stage === 'quiz' && <QuizScreen />}
-                    </div>
-                    <Footer />
-                </div>
-            );
-        };
-
-        // Render React App
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
+
+    <!-- Footer -->
+    <footer className="fixed bottom-0 left-0 w-full bg-dark text-white py-3 shadow-lg z-40 border-t border-indigo-900 border-opacity-50">
+        <div className="max-w-4xl mx-auto px-4 flex justify-between items-center text-sm md:text-base font-medium">
+            <div className="flex items-center space-x-1 space-x-reverse opacity-90 hover:opacity-100 transition-opacity">
+                <span>إعداد:</span>
+                <span className="font-bold text-transparent bg-clip-text bg-gradient-to-l from-purple-400 to-indigo-300">مجدي عبد البصير</span>
+                <StarIcon /><StarIcon /><StarIcon />
+            </div>
+            <div className="text-gray-400 text-xs md:text-sm">
+                منصة موضوعات اكلنيكية باللغة الانجليزية &copy; 2026
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
